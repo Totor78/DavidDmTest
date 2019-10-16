@@ -4,10 +4,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.epsi.erzo</groupId>
-    <artifactId>erzo</artifactId>
+    <artifactId>erzouser</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>Erzo</name>
+    <name>ErzoUser</name>
 
     <repositories>
         <!-- jhipster-needle-maven-repository -->
@@ -594,7 +594,7 @@
                             <image>adoptopenjdk:11-jre-hotspot</image>
                         </from>
                         <to>
-                            <image>erzo:latest</image>
+                            <image>erzouser:latest</image>
                         </to>
                         <container>
                             <entrypoint>
@@ -622,9 +622,9 @@
                         <changeLogFile>${project.basedir}/src/main/resources/config/liquibase/master.xml</changeLogFile>
                         <diffChangeLogFile>${project.basedir}/src/main/resources/config/liquibase/changelog/${maven.build.timestamp}_changelog.xml</diffChangeLogFile>
                         <driver>org.postgresql.Driver</driver>
-                        <url>jdbc:postgresql://localhost:5432/Erzo</url>
+                        <url>jdbc:postgresql://localhost:5432/ErzoUser</url>
                         <defaultSchemaName></defaultSchemaName>
-                        <username>Erzo</username>
+                        <username>ErzoUser</username>
                         <password></password>
                         <referenceUrl>hibernate:spring:com.epsi.erzo.domain?dialect=org.hibernate.dialect.PostgreSQL95Dialect&amp;hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&amp;hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy</referenceUrl>
                         <verbose>true</verbose>
