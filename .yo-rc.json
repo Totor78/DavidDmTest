@@ -1,0 +1,45 @@
+{
+  "generator-jhipster": {
+    "promptValues": {
+      "packageName": "com.epsi.erzo",
+      "nativeLanguage": "fr"
+    },
+    "jhipsterVersion": "6.4.1",
+    "applicationType": "microservice",
+    "baseName": "Erzo",
+    "packageName": "com.epsi.erzo",
+    "packageFolder": "com/epsi/erzo",
+    "serverPort": "8081",
+    "authenticationType": "oauth2",
+    "cacheProvider": "hazelcast",
+    "enableHibernateCache": true,
+    "websocket": false,
+    "databaseType": "sql",
+    "devDatabaseType": "postgresql",
+    "prodDatabaseType": "postgresql",
+    "searchEngine": false,
+    "messageBroker": "kafka",
+    "serviceDiscoveryType": "eureka",
+    "buildTool": "maven",
+    "enableSwaggerCodegen": false,
+    "jwtSecretKey": "MDFmYjQzYTVkMjNhYmYyZDc4ZjNkY2U5MzZiMDA1ZTE4NmRmMWRhNWI5MmI2NjMxMTRkZmQzODE0MjIzOTAyNDBiNzQwN2JhYWIwOTFkYTk5M2ZiOTQyNTk4ZDE3OGE5NzUxOGE2YzI3ODBlZmNiYjIyYzA3M2E4NzcyZTY4MDg=",
+    "embeddableLaunchScript": false,
+    "testFrameworks": [
+      "cucumber"
+    ],
+    "jhiPrefix": "jhi",
+    "entitySuffix": "",
+    "dtoSuffix": "DTO",
+    "otherModules": [],
+    "enableTranslation": true,
+    "clientPackageManager": "npm",
+    "nativeLanguage": "fr",
+    "languages": [
+      "fr",
+      "en"
+    ],
+    "blueprints": [],
+    "skipClient": true,
+    "skipUserManagement": true
+  }
+}

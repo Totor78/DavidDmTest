@@ -1,0 +1,11 @@
+version: '2'
+services:
+  erzo-postgresql:
+    image: postgres:11.5
+    # volumes:
+    #     - ~/volumes/jhipster/Erzo/postgresql/:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=Erzo
+      - POSTGRES_PASSWORD=
+    ports:
+      - 5432:5432
