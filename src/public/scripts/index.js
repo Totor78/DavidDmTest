@@ -9,16 +9,16 @@ function displayUsers() {
     httpGet('/api/users/all')
         .then(response => response.json())
         .then((response) => {
-            var allUsers = response.users;
+            const allUsers = response.users;
             // Empty the anchor
-            var allUsersAnchor = document.getElementById('all-users-anchor');
+            const allUsersAnchor = document.getElementById('all-users-anchor');
             allUsersAnchor.innerHTML = '';
             // Append users to anchor
             allUsers.forEach((user) => {
                 allUsersAnchor.innerHTML += getUserDisplayEle(user);
             });
         });
-};
+}
 
 
 function getUserDisplayEle(user) {
@@ -59,7 +59,7 @@ function getUserDisplayEle(user) {
 
 document.addEventListener('click', function (event) {
     event.preventDefault();
-    var ele = event.target;
+    const ele = event.target;
     if (ele.matches('#add-user-btn')) {
         addUser();
     } else if (ele.matches('.edit-user-btn')) {
@@ -71,13 +71,13 @@ document.addEventListener('click', function (event) {
     } else if (ele.matches('.delete-user-btn')) {
         deleteUser(ele);
     }
-}, false)
+}, false);
 
 
 function addUser() {
-    var nameInput = document.getElementById('name-input');
-    var emailInput = document.getElementById('email-input');
-    var data = {
+    const nameInput = document.getElementById('name-input');
+    const emailInput = document.getElementById('email-input');
+    const data = {
         user: {
             name: nameInput.value,
             email: emailInput.value
@@ -91,27 +91,27 @@ function addUser() {
 
 
 function showEditView(userEle) {
-    var normalView = userEle.getElementsByClassName('normal-view')[0];
-    var editView = userEle.getElementsByClassName('edit-view')[0];
+    const normalView = userEle.getElementsByClassName('normal-view')[0];
+    const editView = userEle.getElementsByClassName('edit-view')[0];
     normalView.style.display = 'none';
     editView.style.display = 'block';
 }
 
 
 function cancelEdit(userEle) {
-    var normalView = userEle.getElementsByClassName('normal-view')[0];
-    var editView = userEle.getElementsByClassName('edit-view')[0];
+    const normalView = userEle.getElementsByClassName('normal-view')[0];
+    const editView = userEle.getElementsByClassName('edit-view')[0];
     normalView.style.display = 'block';
     editView.style.display = 'none';
 }
 
 
 function submitEdit(ele) {
-    var userEle = ele.parentNode.parentNode;
-    var nameInput = userEle.getElementsByClassName('name-edit-input')[0];
-    var emailInput = userEle.getElementsByClassName('email-edit-input')[0];
-    var id = ele.getAttribute('data-user-id');
-    var data = {
+    const userEle: HTMLElement = ele.parentNode.parentNode;
+    const nameInput = userEle.getElementsByClassName('name-edit-input')[0];
+    const emailInput = userEle.getElementsByClassName('email-edit-input')[0];
+    const id = ele.getAttribute('data-user-id');
+    const data = {
         user: {
             name: nameInput.value,
             email: emailInput.value,
@@ -126,7 +126,7 @@ function submitEdit(ele) {
 
 
 function deleteUser(ele) {
-    var id = ele.getAttribute('data-user-id');
+    const id = ele.getAttribute('data-user-id');
 	httpDelete('/api/users/delete/' + id)
         .then(() => {
             displayUsers();
@@ -155,7 +155,7 @@ function httpDelete(path) {
 
 
 function getOptions(verb, data) {
-    var options = {
+    const options = {
         dataType: 'json',
         method: verb,
         headers: {

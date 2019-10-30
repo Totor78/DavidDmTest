@@ -1,23 +1,39 @@
+import {Table, Column, Model, PrimaryKey, Length, NotNull, HasOne} from 'sequelize-typescript';
+import {BuildOptions, DataTypes} from 'sequelize';
+import {v4String} from 'uuid/interfaces';
+import {Theme} from './Theme';
 
 export interface IUser {
-    id?: number;
-    name: string;
-    email: string;
+    id?: v4String;
+    description: string;
+    birthday: Date;
+    theme: Theme;
 }
 
-export class User implements IUser {
+@Table
+export class User extends Model<User> implements IUser {
 
-    public id?: number;
-    public name: string;
-    public email: string;
+    @PrimaryKey
+    @Column(DataTypes.UUIDV4)
+    public id?: v4String;
 
-    constructor(nameOrUser: string | IUser, email?: string) {
-        if (typeof nameOrUser === 'string') {
-            this.name = nameOrUser;
-            this.email = email || '';
-        } else {
-            this.name = nameOrUser.name;
-            this.email = nameOrUser.email;
-        }
+    @Length({max: 144})
+    @Column(DataTypes.STRING)
+    public description: string;
+
+    @Column(DataTypes.DATE)
+    @NotNull
+    public birthday: Date;
+
+    @Column
+    @NotNull
+    @HasOne(() => Theme)
+    public theme: Theme;
+
+    constructor(values: object, options: BuildOptions, description: string, birthday: Date, theme: Theme) {
+        super(values, options);
+        this.description = description;
+        this.birthday = birthday;
+        this.theme = theme;
     }
 }

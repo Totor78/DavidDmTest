@@ -14,7 +14,23 @@ const userDao = new UserDao();
  *                      Get All Users - "GET /api/users/all"
  ******************************************************************************/
 
-router.get('/all', async (req: Request, res: Response) => {
+router.get('', async (req: Request, res: Response) => {
+    try {
+        const users = await userDao.getAll();
+        return res.status(OK).json({users});
+    } catch (err) {
+        logger.error(err.message, err);
+        return res.status(BAD_REQUEST).json({
+            error: err.message,
+        });
+    }
+});
+
+/******************************************************************************
+ *                      Get one UserIAM - "GET /api/users/:id"
+ ******************************************************************************/
+
+router.get('', async (req: Request, res: Response) => {
     try {
         const users = await userDao.getAll();
         return res.status(OK).json({users});
@@ -30,7 +46,7 @@ router.get('/all', async (req: Request, res: Response) => {
  *                       Add One - "POST /api/users/add"
  ******************************************************************************/
 
-router.post('/add', async (req: Request, res: Response) => {
+router.post('', async (req: Request, res: Response) => {
     try {
         const { user } = req.body;
         if (!user) {
@@ -52,7 +68,7 @@ router.post('/add', async (req: Request, res: Response) => {
  *                       Update - "PUT /api/users/update"
  ******************************************************************************/
 
-router.put('/update', async (req: Request, res: Response) => {
+router.put('', async (req: Request, res: Response) => {
     try {
         const { user } = req.body;
         if (!user) {
@@ -75,7 +91,7 @@ router.put('/update', async (req: Request, res: Response) => {
  *                    Delete - "DELETE /api/users/delete/:id"
  ******************************************************************************/
 
-router.delete('/delete/:id', async (req: Request, res: Response) => {
+router.delete('/:id', async (req: Request, res: Response) => {
     try {
         const { id } = req.params as ParamsDictionary;
         await userDao.delete(Number(id));

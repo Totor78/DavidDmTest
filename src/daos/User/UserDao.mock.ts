@@ -1,7 +1,8 @@
-import { IUser } from '@entities';
-import { getRandomInt } from '@shared';
 import { MockDaoMock } from '../MockDb/MockDao.mock';
 import { IUserDao } from './UserDao';
+import uuid = require('uuid');
+import {v4String} from 'uuid/interfaces';
+import {IUser} from '../../entities/User';
 
 export class UserDao extends MockDaoMock implements IUserDao {
 
@@ -14,10 +15,14 @@ export class UserDao extends MockDaoMock implements IUserDao {
         }
     }
 
+    public async getOne(id: v4String): Promise<IUser> {
+        return null as any;
+    }
+
     public async add(user: IUser): Promise<void> {
         try {
             const db = await super.openDb();
-            user.id = getRandomInt();
+            user.id = uuid.v4;
             db.users.push(user);
             await super.saveDb(db);
         } catch (err) {
@@ -35,13 +40,13 @@ export class UserDao extends MockDaoMock implements IUserDao {
                     return;
                 }
             }
-            throw new Error('User not found');
+            throw new Error('UserIAM not found');
         } catch (err) {
             throw err;
         }
     }
 
-    public async delete(id: number): Promise<void> {
+    public async delete(id: string): Promise<void> {
         try {
             const db = await super.openDb();
             for (let i = 0; i < db.users.length; i++) {
@@ -51,7 +56,7 @@ export class UserDao extends MockDaoMock implements IUserDao {
                     return;
                 }
             }
-            throw new Error('User not found');
+            throw new Error('UserIAM not found');
         } catch (err) {
             throw err;
         }

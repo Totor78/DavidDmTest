@@ -3,17 +3,17 @@ import supertest from 'supertest';
 
 import { BAD_REQUEST, CREATED, OK } from 'http-status-codes';
 import { Response, SuperTest, Test } from 'supertest';
-import { IUser, User } from '@entities';
+import {IUserIAM, UserIAM} from '@entities';
 import { UserDao } from '@daos';
 import { pErr, paramMissingError } from '@shared';
 
 describe('Users Routes', () => {
 
-    const usersPath = '/api/users';
-    const getUsersPath = `${usersPath}/all`;
-    const addUsersPath = `${usersPath}/add`;
-    const updateUserPath = `${usersPath}/update`;
-    const deleteUserPath = `${usersPath}/delete/:id`;
+    const usersPath = '/users';
+    const getUsersPath = `${usersPath}`;
+    const addUsersPath = `${usersPath}`;
+    const updateUserPath = `${usersPath}`;
+    const deleteUserPath = `${usersPath}/:id`;
 
     let agent: SuperTest<Test>;
 
@@ -28,9 +28,21 @@ describe('Users Routes', () => {
             request was successful.`, (done) => {
 
             const users = [
-                new User('Sean Maxwell', 'sean.maxwell@gmail.com'),
-                new User('John Smith', 'john.smith@gmail.com'),
-                new User('Gordan Freeman', 'gordan.freeman@gmail.com'),
+                new UserIAM({
+                    username: 'sMaxwell',
+                    firstName: 'Sean',
+                    lastName: 'Maxwell',
+                    email: 'sean.maxwell@gmail.com'}),
+                new UserIAM({
+                    username: 'jSmith',
+                    firstName: 'John',
+                    lastName: 'Smith',
+                    email: 'john.smith@gmail.com'}),
+                new UserIAM({
+                    username: 'gFreeman',
+                    firstName: 'Gordan',
+                    lastName: 'Freeman',
+                    email: 'gordan.freeman@gmail.com'}),
             ];
 
             spyOn(UserDao.prototype, 'getAll').and.returnValue(Promise.resolve(users));
@@ -39,9 +51,9 @@ describe('Users Routes', () => {
                 .end((err: Error, res: Response) => {
                     pErr(err);
                     expect(res.status).toBe(OK);
-                    // Caste instance-objects to 'User' objects
-                    const retUsers = res.body.users.map((user: IUser) => {
-                        return new User(user);
+                    // Caste instance-objects to 'UserIAM' objects
+                    const retUsers = res.body.users.map((user: IUserIAM) => {
+                        return new UserIAM(user);
                     });
                     expect(retUsers).toEqual(users);
                     expect(res.body.error).toBeUndefined();
@@ -72,7 +84,11 @@ describe('Users Routes', () => {
         };
 
         const userData = {
-            user: new User('Gordan Freeman', 'gordan.freeman@gmail.com'),
+            user: new UserIAM({
+                username: 'gFreeman',
+                firstName: 'Gordan',
+                lastName: 'Freeman',
+                email: 'gordan.freeman@gmail.com'}),
         };
 
         it(`should return a status code of "${CREATED}" if the request was successful.`, (done) => {
@@ -123,7 +139,11 @@ describe('Users Routes', () => {
         };
 
         const userData = {
-            user: new User('Gordan Freeman', 'gordan.freeman@gmail.com'),
+            user: new UserIAM({
+                username: 'gFreemanAAAAA',
+                firstName: 'Gordan',
+                lastName: 'Freeman',
+                email: 'gordan.freeman@gmail.com'}),
         };
 
         it(`should return a status code of "${OK}" if the request was successful.`, (done) => {
@@ -169,7 +189,7 @@ describe('Users Routes', () => {
 
     describe(`"DELETE:${deleteUserPath}"`, () => {
 
-        const callApi = (id: number) => {
+        const callApi = (id: string) => {
             return agent.delete(deleteUserPath.replace(':id', id.toString()));
         };
 
@@ -177,7 +197,7 @@ describe('Users Routes', () => {
 
             spyOn(UserDao.prototype, 'delete').and.returnValue(Promise.resolve());
 
-            callApi(5)
+            callApi('uuid')
                 .end((err: Error, res: Response) => {
                     pErr(err);
                     expect(res.status).toBe(OK);
@@ -192,7 +212,7 @@ describe('Users Routes', () => {
             const deleteErrMsg = 'Could not delete user.';
             spyOn(UserDao.prototype, 'delete').and.throwError(deleteErrMsg);
 
-            callApi(1)
+            callApi('uiid')
                 .end((err: Error, res: Response) => {
                     pErr(err);
                     expect(res.status).toBe(BAD_REQUEST);
