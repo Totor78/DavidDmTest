@@ -1,4 +1,4 @@
-import {Table, Column, Model, PrimaryKey, Length, NotNull, HasOne} from 'sequelize-typescript';
+import {Table, Column, Model, PrimaryKey, Length, NotNull, HasOne, Default} from 'sequelize-typescript';
 import {BuildOptions, DataTypes} from 'sequelize';
 import {v4String} from 'uuid/interfaces';
 import {Theme} from './Theme';
@@ -14,6 +14,7 @@ export interface IUser {
 export class User extends Model<User> implements IUser {
 
     @PrimaryKey
+    @Default(DataTypes.UUIDV4)
     @Column(DataTypes.UUID)
     public id!: v4String;
 

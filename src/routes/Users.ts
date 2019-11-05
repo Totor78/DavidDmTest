@@ -49,11 +49,12 @@ router.get('', async (req: Request, res: Response) => {
 router.post('', async (req: Request, res: Response) => {
     try {
         const { user } = req.body;
+        /*
         if (!user) {
             return res.status(BAD_REQUEST).json({
                 error: paramMissingError,
             });
-        }
+        } */
         await userDao.add(user);
         return res.status(CREATED).end();
     } catch (err) {
