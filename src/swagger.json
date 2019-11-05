@@ -197,9 +197,6 @@
     "User": {
       "type": "object",
       "properties": {
-        "name": {
-          "type": "string"
-        },
         "description": {
           "type": "string"
         },
@@ -207,10 +204,13 @@
           "type": "string",
           "format": "date"
         },
-        "Theme": {
+        "theme": {
           "type": "#/definitions/Theme"
+        },
+        "picture": {
+          "type": "string"
         }
-      },
+        },
       "xml": {
         "name": "User"
       }

@@ -1,6 +1,7 @@
 import {v4String} from 'uuid/interfaces';
 import {database} from '@shared';
 import {IUser, User} from '@entities';
+import {ISubscription, Subscription} from '@entities';
 
 export interface IUserDao {
     getAll: () => Promise<IUser[]>;
@@ -8,13 +9,12 @@ export interface IUserDao {
     add: (user: IUser) => Promise<any>;
     update: (user: IUser) => Promise<any>;
     delete: (id: v4String) => Promise<void>;
+    getFollowerByUser: (id: v4String) => Promise<any>;
 }
 
 export class UserDao implements IUserDao {
     private userRepository = database.getRepository(User);
-    /**
-     *
-     */
+    private subscriptionRepository = database.getRepository(Subscription);
     public async getAll(): Promise<IUser[]> {
         return this.userRepository.findAll();
     }
@@ -25,11 +25,36 @@ export class UserDao implements IUserDao {
         return this.userRepository.findOne({ where: {id: String(id) }});
     }
     /**
-     *
      * @param user to add
      */
+    public async getFollowerByUser(id: v4String): Promise<any> {
+         return this.userRepository.findByPk(id.toString(), {
+            include: [{
+                model: database.getRepository(Subscription),
+                as: 'followers',
+            }],
+        });
+    }
+    /**
+     * @param user to add
+     */
+    public async getFollowsByUser(id: v4String): Promise<any> {
+        return this.userRepository.findByPk(id.toString(), {
+            include: [{
+                model: database.getRepository(Subscription),
+                as: 'follows',
+            }],
+        });
+    }
     public async add(user: IUser): Promise<any> {
-        return this.userRepository.create({user});
+        return this.userRepository.create(user);
+    }
+
+    public async addSub(user: IUser): Promise<any> {
+        return this.userRepository.create(user, {include: [{
+                model: database.getRepository(Subscription),
+                as: 'followers',
+            }]});
     }
 
     /**

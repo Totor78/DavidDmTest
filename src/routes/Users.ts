@@ -27,12 +27,45 @@ router.get('', async (req: Request, res: Response) => {
 });
 
 /******************************************************************************
+ *                      Get Followers by  Users - "GET /api/users/all"
+ ******************************************************************************/
+
+router.get('/GetFollowers/:id', async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const users = await userDao.getFollowerByUser( id );
+        return res.status(OK).json({users});
+    } catch (err) {
+        logger.error(err.message, err);
+        return res.status(BAD_REQUEST).json({
+            error: err.message,
+        });
+    }
+});
+/******************************************************************************
+ *                      Get Followed by  Users - "GET /api/users/all"
+ ******************************************************************************/
+
+router.get('/GetFollows/:id', async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const users = await userDao.getFollowsByUser( id );
+        return res.status(OK).json({users});
+    } catch (err) {
+        logger.error(err.message, err);
+        return res.status(BAD_REQUEST).json({
+            error: err.message,
+        });
+    }
+});
+/******************************************************************************
  *                      Get one UserIAM - "GET /api/users/:id"
  ******************************************************************************/
 
-router.get('', async (req: Request, res: Response) => {
+router.get('/:id', async (req: Request, res: Response) => {
     try {
-        const users = await userDao.getAll();
+        const { id } = req.params;
+        const users = await userDao.getOne(id);
         return res.status(OK).json({users});
     } catch (err) {
         logger.error(err.message, err);
@@ -48,7 +81,8 @@ router.get('', async (req: Request, res: Response) => {
 
 router.post('', async (req: Request, res: Response) => {
     try {
-        const { user } = req.body;
+
+        const user  = req.body;
         /*
         if (!user) {
             return res.status(BAD_REQUEST).json({
@@ -65,6 +99,29 @@ router.post('', async (req: Request, res: Response) => {
     }
 });
 
+/******************************************************************************
+ *                       Add SUB - "POST /api/users/add"
+ ******************************************************************************/
+
+router.post('/Sub', async (req: Request, res: Response) => {
+    try {
+
+        const user  = req.body;
+        /*
+        if (!user) {
+            return res.status(BAD_REQUEST).json({
+                error: paramMissingError,
+            });
+        } */
+        await userDao.addSub(user);
+        return res.status(CREATED).end();
+    } catch (err) {
+        logger.error(err.message, err);
+        return res.status(BAD_REQUEST).json({
+            error: err.message,
+        });
+    }
+});
 /******************************************************************************
  *                       Update - "PUT /api/users/update"
  ******************************************************************************/
