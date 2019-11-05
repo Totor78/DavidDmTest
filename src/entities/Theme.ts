@@ -1,22 +1,21 @@
-import {Column, Length, Model, NotNull, PrimaryKey, Table} from 'sequelize-typescript';
+import {Column, ForeignKey, Length, Model, NotNull, PrimaryKey, Table} from 'sequelize-typescript';
 import {BuildOptions, DataTypes} from 'sequelize';
+import {v4String} from 'uuid/interfaces';
+import {User} from './User';
 
 @Table
 export class Theme extends Model<Theme> {
 
     @PrimaryKey
     @Length({max: 20})
-    @Column(DataTypes.STRING)
-    public key: string;
+    @Column(DataTypes.UUID)
+    public id?: v4String;
 
     @Length({max: 20})
-    @NotNull
-    @Column(DataTypes.STRING)
-    public value: string;
+    @Column
+    public value?: string;
 
-    constructor(values: object, options: BuildOptions, key: string, value: string) {
-        super(values, options);
-        this.key = key;
-        this.value = value;
-    }
+    @ForeignKey(() => User)
+    @Column(DataTypes.UUID)
+    private userId?: v4String;
 }

@@ -4,7 +4,8 @@ import { Request, Response } from 'express';
 import logger from 'morgan';
 import path from 'path';
 import BaseRouter from './routes';
-
+import swaggerUi from 'swagger-ui-express';
+import * as swaggerDocument from './swagger.json';
 // Init express
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/', BaseRouter);
 
 /**

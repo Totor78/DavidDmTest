@@ -4,36 +4,27 @@ import {v4String} from 'uuid/interfaces';
 import {Theme} from './Theme';
 
 export interface IUser {
-    id?: v4String;
-    description: string;
-    birthday: Date;
-    theme: Theme;
+    id: v4String;
+    description?: string;
+    birthday?: Date;
+    theme?: Theme;
 }
 
 @Table
 export class User extends Model<User> implements IUser {
 
     @PrimaryKey
-    @Column(DataTypes.UUIDV4)
-    public id?: v4String;
+    @Column(DataTypes.UUID)
+    public id!: v4String;
 
     @Length({max: 144})
-    @Column(DataTypes.STRING)
-    public description: string;
-
-    @Column(DataTypes.DATE)
-    @NotNull
-    public birthday: Date;
+    @Column
+    public description?: string;
 
     @Column
-    @NotNull
-    @HasOne(() => Theme)
-    public theme: Theme;
+    public birthday?: Date;
 
-    constructor(values: object, options: BuildOptions, description: string, birthday: Date, theme: Theme) {
-        super(values, options);
-        this.description = description;
-        this.birthday = birthday;
-        this.theme = theme;
-    }
+    @HasOne(() => Theme)
+    public theme?: Theme;
+
 }

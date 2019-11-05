@@ -46,7 +46,7 @@ export class UserDao extends MockDaoMock implements IUserDao {
         }
     }
 
-    public async delete(id: string): Promise<void> {
+    public async delete(id: v4String): Promise<void> {
         try {
             const db = await super.openDb();
             for (let i = 0; i < db.users.length; i++) {
