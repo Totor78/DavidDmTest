@@ -24,7 +24,7 @@ export interface ISubscription {
 
 @Table
 export class Subscription extends Model<Subscription> implements ISubscription {
-
+    @PrimaryKey
     @ForeignKey(() => User)
     @Column(DataTypes.UUID)
     public followedId!: v4String;
@@ -32,6 +32,7 @@ export class Subscription extends Model<Subscription> implements ISubscription {
     @BelongsTo(() => User)
     public followed!: User;
 
+    @PrimaryKey
     @ForeignKey(() => User)
     @Column( DataTypes.UUID)
     public followerId!: v4String;

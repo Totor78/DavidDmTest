@@ -49,14 +49,6 @@ export class UserDao implements IUserDao {
     public async add(user: IUser): Promise<any> {
         return this.userRepository.create(user);
     }
-
-    public async addSub(user: IUser): Promise<any> {
-        return this.userRepository.create(user, {include: [{
-                model: database.getRepository(Subscription),
-                as: 'followers',
-            }]});
-    }
-
     /**
      *
      * @param user to update
@@ -65,7 +57,7 @@ export class UserDao implements IUserDao {
 
         return this.userRepository.update(user, {
             where: {
-            id: String(user.id),
+                id: String(user.id),
             }});
     }
 
