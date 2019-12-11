@@ -79,4 +79,4 @@ deploy:
   image: hublo/kubectl:latest
   script:
     - echo -n $KUBE_CONFIG | base64 -d > ./config
-    - kubectl set image deployment/posts $CONTAINER_NAME=$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --kubeconfig ./config --namespace default
+    - kubectl set image deployment/users $CONTAINER_NAME=$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --kubeconfig ./config --namespace default
