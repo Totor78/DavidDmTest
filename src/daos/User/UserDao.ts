@@ -10,6 +10,7 @@ export interface IUserDao {
     update: (user: IUser) => Promise<any>;
     delete: (id: v4String) => Promise<void>;
     getFollowerByUser: (id: v4String) => Promise<any>;
+    getFollowsByUser: (id: v4String) => Promise<any>;
 }
 
 export class UserDao implements IUserDao {
@@ -25,7 +26,7 @@ export class UserDao implements IUserDao {
         return this.userRepository.findOne({ where: {id: String(id) }});
     }
     /**
-     * @param user to add
+     * @param id
      */
     public async getFollowerByUser(id: v4String): Promise<any> {
          return this.userRepository.findByPk(id.toString(), {
@@ -36,7 +37,7 @@ export class UserDao implements IUserDao {
         });
     }
     /**
-     * @param user to add
+     * @param id
      */
     public async getFollowsByUser(id: v4String): Promise<any> {
         return this.userRepository.findByPk(id.toString(), {

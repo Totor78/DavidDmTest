@@ -19,6 +19,14 @@ export class UserDao extends MockDaoMock implements IUserDao {
         return null as any;
     }
 
+    public async getFollowerByUser(id: v4String): Promise<any> {
+        return null as any;
+    }
+
+    public async getFollowsByUser(id: v4String): Promise<any> {
+        return null as any;
+    }
+
     public async add(user: IUser): Promise<void> {
         try {
             const db = await super.openDb();

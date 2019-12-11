@@ -6,7 +6,8 @@
     "lint": "tslint --project \"tsconfig.json\"",
     "start": "npm run build && node -r module-alias/register ./dist/start.js",
     "start-dev": "nodemon --config \"./util/nodemon.json\"",
-    "test": "nodemon --config \"./util/nodemon.test.json\""
+    "test": "nodemon --config \"./util/nodemon.test.json\"",
+    "testgit": "ts-node -r tsconfig-paths/register ./spec/start.ts"
   },
   "_moduleAliases": {
     "@daos": "dist/daos",
