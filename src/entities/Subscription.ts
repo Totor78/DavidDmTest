@@ -13,7 +13,6 @@ import {
 import { BuildOptions, DataTypes} from 'sequelize';
 import {v4String} from 'uuid/interfaces';
 import {User} from './User';
-import {DataType} from 'sequelize/types/lib/data-types';
 
 export interface ISubscription {
     followedId: v4String;
@@ -22,7 +21,7 @@ export interface ISubscription {
     follower: User;
 }
 
-@Table
+@Table({paranoid: true, tableName: 'subscription'})
 export class Subscription extends Model<Subscription> implements ISubscription {
     @PrimaryKey
     @ForeignKey(() => User)

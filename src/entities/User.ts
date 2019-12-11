@@ -8,7 +8,7 @@ import {
     HasOne,
     Default,
     BelongsToMany,
-    Scopes, HasMany
+    Scopes, HasMany,
 } from 'sequelize-typescript';
 import {BuildOptions, DataTypes} from 'sequelize';
 import {v4String} from 'uuid/interfaces';
@@ -25,7 +25,7 @@ export interface IUser {
     follows: Subscription[];
 }
 
-@Table
+@Table({paranoid: true, tableName: 'user'})
 export class User extends Model<User> implements IUser {
 
     @PrimaryKey

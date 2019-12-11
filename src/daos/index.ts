@@ -4,6 +4,7 @@ let subDaoPath = './Subscription/SubscriptionDao';
 
 if (usingMockDb === 'true') {
     userDaoPath += '.mock';
+    subDaoPath += '.mock';
 }
 
 // tslint:disable:no-var-requires

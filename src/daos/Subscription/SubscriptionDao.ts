@@ -1,5 +1,5 @@
 import {v4String} from 'uuid/interfaces';
-import {database} from '@shared';
+import {SequelizeConnection} from '@shared';
 import {ISubscription, IUser, Subscription} from '@entities';
 
 export interface ISubscriptionDao {
@@ -11,7 +11,7 @@ export interface ISubscriptionDao {
 }
 
 export class SubscriptionDao implements ISubscriptionDao {
-    private subscriptionRepository = database.getRepository(Subscription);
+    private subscriptionRepository = SequelizeConnection.getInstance().getRepository(Subscription);
 
     public async getAll(): Promise<ISubscription[]> {
         return this.subscriptionRepository.findAll();
@@ -33,7 +33,7 @@ export class SubscriptionDao implements ISubscriptionDao {
 
     /**
      *
-     * @param user to update
+     * @param subscription
      */
     public async update(subscription: ISubscription): Promise<any> {
 
@@ -47,7 +47,8 @@ export class SubscriptionDao implements ISubscriptionDao {
 
     /**
      *
-     * @param id
+     * @param followerId
+     * @param followedId
      */
     public async delete(followerId: v4String, followedId: v4String): Promise<any> {
 

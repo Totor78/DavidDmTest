@@ -1,5 +1,5 @@
 import {v4String} from 'uuid/interfaces';
-import {database} from '@shared';
+import {SequelizeConnection} from '@shared';
 import {IUser, User} from '@entities';
 import {ISubscription, Subscription} from '@entities';
 
@@ -13,8 +13,8 @@ export interface IUserDao {
 }
 
 export class UserDao implements IUserDao {
-    private userRepository = database.getRepository(User);
-    private subscriptionRepository = database.getRepository(Subscription);
+    private userRepository = SequelizeConnection.getInstance().getRepository(User);
+    private subscriptionRepository = SequelizeConnection.getInstance().getRepository(Subscription);
     public async getAll(): Promise<IUser[]> {
         return this.userRepository.findAll();
     }
@@ -30,7 +30,7 @@ export class UserDao implements IUserDao {
     public async getFollowerByUser(id: v4String): Promise<any> {
          return this.userRepository.findByPk(id.toString(), {
             include: [{
-                model: database.getRepository(Subscription),
+                model: this.subscriptionRepository,
                 as: 'followers',
             }],
         });
@@ -41,7 +41,7 @@ export class UserDao implements IUserDao {
     public async getFollowsByUser(id: v4String): Promise<any> {
         return this.userRepository.findByPk(id.toString(), {
             include: [{
-                model: database.getRepository(Subscription),
+                model: this.subscriptionRepository,
                 as: 'follows',
             }],
         });

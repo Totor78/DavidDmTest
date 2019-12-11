@@ -3,7 +3,7 @@ import {BuildOptions, DataTypes} from 'sequelize';
 import {v4String} from 'uuid/interfaces';
 import {User} from './User';
 
-@Table
+@Table({paranoid: true, tableName: 'theme'})
 export class Theme extends Model<Theme> {
 
     @PrimaryKey

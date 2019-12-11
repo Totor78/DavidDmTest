@@ -30,7 +30,7 @@ router.get('', async (req: Request, res: Response) => {
  *                      Get Followers by  Users - "GET /api/users/all"
  ******************************************************************************/
 
-router.get('/GetFollowers/:id', async (req: Request, res: Response) => {
+router.get('/followers/:id', async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
         const users = await userDao.getFollowerByUser( id );
@@ -46,7 +46,7 @@ router.get('/GetFollowers/:id', async (req: Request, res: Response) => {
  *                      Get Followed by  Users - "GET /api/users/all"
  ******************************************************************************/
 
-router.get('/GetFollows/:id', async (req: Request, res: Response) => {
+router.get('/follows/:id', async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
         const users = await userDao.getFollowsByUser( id );
