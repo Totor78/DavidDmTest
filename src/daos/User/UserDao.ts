@@ -2,7 +2,8 @@ import {v4String} from 'uuid/interfaces';
 import {SequelizeConnection} from '@shared';
 import {IUser, User} from '@entities';
 import {ISubscription, Subscription} from '@entities';
-
+import {getusers} from '../../services/user';
+import {logger} from '@shared';
 export interface IUserDao {
     getAll: () => Promise<IUser[]>;
     getOne: (id: v4String) => Promise<IUser|null>;
@@ -23,6 +24,7 @@ export class UserDao implements IUserDao {
      * @param id of the user to return
      */
     public async getOne(id: v4String): Promise<IUser|null> {
+        //logger.debug(getusers());
         return this.userRepository.findOne({ where: {id: String(id) }});
     }
     /**

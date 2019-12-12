@@ -11,6 +11,7 @@ import cors from 'cors';
 
 // Init express
 const app = express();
+// Add middleware/settings/routes to express.
 const keycloak = KeycloakMiddleware.getInstance();
 // Add middleware/settings/routes to express.
 const allowedOrigins = ['http://127.0.0.1:3000/', 'http://localhost:3000/', 'http://erzo.wtf/'];
@@ -20,12 +21,13 @@ app.use(cors({
 }));
 app.use(keycloak.middleware());
 app.use('/users', BaseRouter);
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/users/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 /**
  * Point express to the 'views' directory. If you're using a

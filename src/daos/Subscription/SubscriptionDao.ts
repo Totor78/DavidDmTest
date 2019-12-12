@@ -30,7 +30,6 @@ export class SubscriptionDao implements ISubscriptionDao {
     public async add(subscription: ISubscription): Promise<any> {
         return this.subscriptionRepository.create(subscription);
     }
-
     /**
      *
      * @param subscription
