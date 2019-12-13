@@ -24,7 +24,7 @@ export class UserDao implements IUserDao {
      * @param id of the user to return
      */
     public async getOne(id: v4String): Promise<IUser|null> {
-        //logger.debug(getusers());
+        getusers();
         return this.userRepository.findOne({ where: {id: String(id) }});
     }
     /**
