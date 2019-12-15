@@ -12,7 +12,6 @@ export class KeycloakMiddleware {
         if (!KeycloakMiddleware.keycloak) {
             KeycloakMiddleware.init();
         }
-
         return KeycloakMiddleware.keycloak;
     }
 

@@ -4,7 +4,10 @@ import { Request, Response, Router, Express } from 'express';
 import { BAD_REQUEST, CREATED, OK } from 'http-status-codes';
 import { paramMissingError } from '@shared';
 import { ParamsDictionary } from 'express-serve-static-core';
-import { getusers } from '../services/user';
+import {} from 'jwt-decode';
+import {getusers} from '../services/user';
+import jwt_decode from 'jwt-decode';
+import {kStringMaxLength} from 'buffer';
 // Init shared
 const router = Router();
 const userDao = new UserDao();
@@ -63,10 +66,17 @@ router.get('/follows/:id', async (req: Request, res: Response) => {
  ******************************************************************************/
 
 router.get('/:id', async (req: Request, res: Response) => {
+    const authorization = req.headers.authorization;
+    const token = authorization !== undefined; //? jwt_decode(authorization.split(' ')[1]) : '';
     try {
+        if (authorization != null) {
+            const kcusers = await getusers(authorization);
+            logger.info(kcusers);
+        }
         const { id } = req.params;
         const users = await userDao.getOne(id);
-        return res.status(OK).json({users});
+        const str = res.status(OK).json({users});
+        return str;
     } catch (err) {
         logger.error(err.message, err);
         return res.status(BAD_REQUEST).json({
