@@ -5,9 +5,10 @@ import { BAD_REQUEST, CREATED, OK } from 'http-status-codes';
 import { paramMissingError } from '@shared';
 import { ParamsDictionary } from 'express-serve-static-core';
 import {} from 'jwt-decode';
-import {getusers} from '../services/user';
+import {getuserByName, getusers} from '../services/user';
 import jwt_decode from 'jwt-decode';
 import {kStringMaxLength} from 'buffer';
+import {on} from 'cluster';
 // Init shared
 const router = Router();
 const userDao = new UserDao();
@@ -66,17 +67,11 @@ router.get('/follows/:id', async (req: Request, res: Response) => {
  ******************************************************************************/
 
 router.get('/:id', async (req: Request, res: Response) => {
-    const authorization = req.headers.authorization;
-    const token = authorization !== undefined; //? jwt_decode(authorization.split(' ')[1]) : '';
     try {
-        if (authorization != null) {
-            const kcusers = await getusers(authorization);
-            logger.info(kcusers);
-        }
-        const { id } = req.params;
-        const users = await userDao.getOne(id);
-        const str = res.status(OK).json({users});
-        return str;
+            const { id } = req.params;
+            const users = await userDao.getOne(id);
+            const str = res.status(OK).json({users});
+            return str;
     } catch (err) {
         logger.error(err.message, err);
         return res.status(BAD_REQUEST).json({
@@ -85,6 +80,45 @@ router.get('/:id', async (req: Request, res: Response) => {
     }
 });
 
+/******************************************************************************
+ *                      Get all UserIAM - "GET /api/users/keycloak"
+ ******************************************************************************/
+router.get('/keycloak/', async (req: Request, res: Response) => {
+    const authorization = req.headers.authorization;
+    try {
+        if (authorization != null) {
+            const onlyBearer = authorization.split(' ', 2);
+            const kcusers = await getusers(onlyBearer[1]);
+            const str = res.status(OK).json({kcusers});
+            return str;
+        }
+    } catch (err) {
+        logger.error(err.message, err);
+        return res.status(BAD_REQUEST).json({
+            error: err.message,
+        });
+    }
+});
+
+/******************************************************************************
+ *                      Get one UserIAM - "GET /api/users/byName/:name"
+ ******************************************************************************/
+router.get('/keycloak/:name', async (req: Request, res: Response) => {
+    const authorization = req.headers.authorization;
+    try {
+        if (authorization != null) {
+            const onlyBearer = authorization.split(' ', 2);
+            const {name} = req.params;
+            const user = await getuserByName(onlyBearer[1], name);
+            const str = res.status(OK).json({user});
+        }
+    } catch (err) {
+        logger.error(err.message, err);
+        return res.status(BAD_REQUEST).json({
+            error: err.message,
+        });
+    }
+});
 /******************************************************************************
  *                       Add One - "POST /api/users/add"
  ******************************************************************************/

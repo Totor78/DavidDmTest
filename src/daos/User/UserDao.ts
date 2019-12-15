@@ -2,7 +2,6 @@ import {v4String} from 'uuid/interfaces';
 import {SequelizeConnection} from '@shared';
 import {IUser, User} from '@entities';
 import {ISubscription, Subscription} from '@entities';
-
 export interface IUserDao {
     getAll: () => Promise<IUser[]>;
     getOne: (id: v4String) => Promise<IUser|null>;
