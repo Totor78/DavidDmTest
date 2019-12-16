@@ -1,6 +1,6 @@
 
 import { SubscriptionDao } from '@daos';
-import { logger } from '@shared';
+import { globalInfoLogger } from '@shared';
 import { Request, Response, Router, Express } from 'express';
 import { BAD_REQUEST, CREATED, OK } from 'http-status-codes';
 import { paramMissingError } from '@shared';
@@ -19,7 +19,7 @@ router.get('', async (req: Request, res: Response) => {
         const subscriptions = await subdao.getAll();
         return res.status(OK).json({subscriptions});
     } catch (err) {
-        logger.error(err.message, err);
+        globalInfoLogger.error(err.message, err);
         return res.status(BAD_REQUEST).json({
             error: err.message,
         });
@@ -37,7 +37,7 @@ router.get('/:id', async (req: Request, res: Response) => {
         const subs = await subdao.getOne(followerId, followedId);
         return res.status(OK).json({subs});
     } catch (err) {
-        logger.error(err.message, err);
+        globalInfoLogger.error(err.message, err);
         return res.status(BAD_REQUEST).json({
             error: err.message,
         });
@@ -55,7 +55,7 @@ router.post('', async (req: Request, res: Response) => {
         await subdao.add(sub);
         return res.status(CREATED).end();
     } catch (err) {
-        logger.error(err.message, err);
+        globalInfoLogger.error(err.message, err);
         return res.status(BAD_REQUEST).json({
             error: err.message,
         });
@@ -77,7 +77,7 @@ router.put('', async (req: Request, res: Response) => {
         await subdao.update(sub);
         return res.status(OK).end();
     } catch (err) {
-        logger.error(err.message, err);
+        globalInfoLogger.error(err.message, err);
         return res.status(BAD_REQUEST).json({
             error: err.message,
         });
@@ -94,7 +94,7 @@ router.delete('/:id', async (req: Request, res: Response) => {
         await subdao.delete(Number(id));
         return res.status(OK).end();
     } catch (err) {
-        logger.error(err.message, err);
+        globalInfoLogger.error(err.message, err);
         return res.status(BAD_REQUEST).json({
             error: err.message,
         });

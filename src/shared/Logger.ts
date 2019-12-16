@@ -1,61 +1,61 @@
-/**
- * Setup the winston logger.
- *
- * Documentation: https://github.com/winstonjs/winston
- */
-
-import { createLogger, format, transports } from 'winston';
-
-// Import Functions
-const { File, Console } = transports;
-
-// Init Logger
-const wintstonLogger = createLogger({
-    level: 'info',
+import { configure, getLogger } from 'log4js';
+import {beforeMethod} from 'kaop-ts';
+configure({
+    appenders: {
+        controllers: { type: 'console' },
+        daos: { type: 'console' },
+        global: { type: 'console' },
+        services: { type: 'console' },
+    },
+    categories: {
+        controllers: {
+            appenders: [
+                'controllers',
+            ],
+            level: 'info',
+        },
+        daos: {
+            appenders: [
+                'daos',
+            ],
+            level: 'info',
+        },
+        default: {
+            appenders: [
+                'global',
+            ],
+            level: 'info',
+        },
+        services: {
+            appenders: [
+                'daos',
+            ],
+            level: 'info',
+        },
+    },
 });
 
-/**
- * For production write to all logs with level `info` and below
- * to `combined.log. Write all logs error (and below) to `error.log`.
- * For development, print to the console.
- */
-if (process.env.NODE_ENV === 'production') {
+export const globalInfoLogger = getLogger();
 
-    const fileFormat = format.combine(
-        format.timestamp(),
-        format.json(),
-    );
-    const errTransport = new File({
-        filename: './logs/error.log',
-        format: fileFormat,
-        level: 'error',
+const controllerLogger = getLogger('controllers');
+export const NameCallerArgsReturnLogControllersInfoLevel = (className: string) => {
+    return beforeMethod((meta) => {
+        controllerLogger.info('Inside ' + className);
+        controllerLogger.info(meta.method.name + ' called');
+        controllerLogger.info(meta.args.length > 0 ? 'With arguments : ' + 'request, response, next' : 'Without arguments');
     });
-    const infoTransport = new File({
-        filename: './logs/combined.log',
-        format: fileFormat,
-    });
-    wintstonLogger.add(errTransport);
-    wintstonLogger.add(infoTransport);
+};
 
-} else {
+const daoLogger = getLogger('daos');
+export const NameCallerArgsReturnLogDaosInfoLevel = (className: string) => beforeMethod((meta) => {
+    daoLogger.info('Inside ' + className);
+    daoLogger.info(meta.method.name + ' called');
+    daoLogger.info(meta.args.length > 0 ? 'With arguments : ' + meta.args : 'Without arguments');
+});
 
-    const errorStackFormat = format((info) => {
-        if (info.stack) {
-            // tslint:disable-next-line:no-console
-            console.log(info.stack);
-            return false;
-        }
-        return info;
-    });
-    const consoleTransport = new Console({
-        format: format.combine(
-            format.colorize(),
-            format.simple(),
-            errorStackFormat(),
-        ),
-    });
-    wintstonLogger.add(consoleTransport);
-}
-
-// Export logger
-export const logger = wintstonLogger;
+const serviceLogger = getLogger('services');
+export const NameCallerArgsReturnLogServicesInfoLevel = (className: string) => beforeMethod((meta) => {
+    serviceLogger.info('Inside ' + className);
+    serviceLogger.info(meta.method.name + ' called');
+    serviceLogger.info(meta.args.length > 0 ? 'With arguments : ' + meta.args : 'Without arguments');
+});

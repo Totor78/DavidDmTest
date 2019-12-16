@@ -1,5 +1,5 @@
 import {v4String} from 'uuid/interfaces';
-import {SequelizeConnection} from '@shared';
+import {NameCallerArgsReturnLogDaosInfoLevel, SequelizeConnection} from '@shared';
 import {IUser, User} from '@entities';
 import {ISubscription, Subscription} from '@entities';
 export interface IUserDao {
@@ -15,18 +15,22 @@ export interface IUserDao {
 export class UserDao implements IUserDao {
     private userRepository = SequelizeConnection.getInstance().getRepository(User);
     private subscriptionRepository = SequelizeConnection.getInstance().getRepository(Subscription);
+
+    @NameCallerArgsReturnLogDaosInfoLevel('User')
     public async getAll(): Promise<IUser[]> {
         return this.userRepository.findAll();
     }
     /**
      * @param id of the user to return
      */
+    @NameCallerArgsReturnLogDaosInfoLevel('User')
     public async getOne(id: v4String): Promise<IUser|null> {
         return this.userRepository.findOne({ where: {id: String(id) }});
     }
     /**
      * @param id
      */
+    @NameCallerArgsReturnLogDaosInfoLevel('User')
     public async getFollowerByUser(id: v4String): Promise<any> {
          return this.userRepository.findByPk(id.toString(), {
             include: [{
@@ -38,6 +42,7 @@ export class UserDao implements IUserDao {
     /**
      * @param id
      */
+    @NameCallerArgsReturnLogDaosInfoLevel('User')
     public async getFollowsByUser(id: v4String): Promise<any> {
         return this.subscriptionRepository.findAll({
             where: {
@@ -45,6 +50,7 @@ export class UserDao implements IUserDao {
             },
         });
     }
+    @NameCallerArgsReturnLogDaosInfoLevel('User')
     public async add(user: IUser): Promise<any> {
         return this.userRepository.create(user);
     }
@@ -52,6 +58,7 @@ export class UserDao implements IUserDao {
      *
      * @param user to update
      */
+    @NameCallerArgsReturnLogDaosInfoLevel('User')
     public async update(user: IUser): Promise<any> {
 
         return this.userRepository.update(user, {
@@ -64,6 +71,7 @@ export class UserDao implements IUserDao {
      *
      * @param id
      */
+    @NameCallerArgsReturnLogDaosInfoLevel('User')
     public async delete(id: v4String): Promise<any> {
 
         return this.userRepository.destroy( {

@@ -1,5 +1,5 @@
 import { UserDao } from '@daos';
-import { logger } from '@shared';
+import { globalInfoLogger } from '@shared';
 import { Request, Response, Router, Express } from 'express';
 import { BAD_REQUEST, CREATED, OK } from 'http-status-codes';
 import { paramMissingError } from '@shared';
@@ -23,7 +23,7 @@ router.get('', async (req: Request, res: Response) => {
         const users = await userDao.getAll();
         return res.status(OK).json({users});
     } catch (err) {
-        logger.error(err.message, err);
+        globalInfoLogger.error(err.message, err);
         return res.status(BAD_REQUEST).json({
             error: err.message,
         });
@@ -40,7 +40,7 @@ router.get('/followers/:id', async (req: Request, res: Response) => {
         const users = await userDao.getFollowerByUser( id );
         return res.status(OK).json({users});
     } catch (err) {
-        logger.error(err.message, err);
+        globalInfoLogger.error(err.message, err);
         return res.status(BAD_REQUEST).json({
             error: err.message,
         });
@@ -56,7 +56,7 @@ router.get('/follows/:id', async (req: Request, res: Response) => {
         const users = await userDao.getFollowsByUser( id );
         return res.status(OK).json({users});
     } catch (err) {
-        logger.error(err.message, err);
+        globalInfoLogger.error(err.message, err);
         return res.status(BAD_REQUEST).json({
             error: err.message,
         });
@@ -73,7 +73,7 @@ router.get('/:id', async (req: Request, res: Response) => {
             const str = res.status(OK).json({users});
             return str;
     } catch (err) {
-        logger.error(err.message, err);
+        globalInfoLogger.error(err.message, err);
         return res.status(BAD_REQUEST).json({
             error: err.message,
         });
@@ -93,7 +93,7 @@ router.get('/keycloak/', async (req: Request, res: Response) => {
             return str;
         }
     } catch (err) {
-        logger.error(err.message, err);
+        globalInfoLogger.error(err.message, err);
         return res.status(BAD_REQUEST).json({
             error: err.message,
         });
@@ -113,7 +113,7 @@ router.get('/keycloak/:name', async (req: Request, res: Response) => {
             const str = res.status(OK).json({user});
         }
     } catch (err) {
-        logger.error(err.message, err);
+        globalInfoLogger.error(err.message, err);
         return res.status(BAD_REQUEST).json({
             error: err.message,
         });
@@ -130,7 +130,7 @@ router.post('', async (req: Request, res: Response) => {
         await userDao.add(user);
         return res.status(CREATED).end();
     } catch (err) {
-        logger.error(err.message, err);
+        globalInfoLogger.error(err.message, err);
         return res.status(BAD_REQUEST).json({
             error: err.message,
         });
@@ -152,7 +152,7 @@ router.put('', async (req: Request, res: Response) => {
         await userDao.update(user);
         return res.status(OK).end();
     } catch (err) {
-        logger.error(err.message, err);
+        globalInfoLogger.error(err.message, err);
         return res.status(BAD_REQUEST).json({
             error: err.message,
         });
@@ -169,7 +169,7 @@ router.delete('/:id', async (req: Request, res: Response) => {
         await userDao.delete(Number(id));
         return res.status(OK).end();
     } catch (err) {
-        logger.error(err.message, err);
+        globalInfoLogger.error(err.message, err);
         return res.status(BAD_REQUEST).json({
             error: err.message,
         });

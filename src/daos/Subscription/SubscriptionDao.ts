@@ -1,5 +1,5 @@
 import {v4String} from 'uuid/interfaces';
-import {SequelizeConnection} from '@shared';
+import {NameCallerArgsReturnLogDaosInfoLevel, SequelizeConnection} from '@shared';
 import {ISubscription, IUser, Subscription} from '@entities';
 
 export interface ISubscriptionDao {
@@ -13,10 +13,12 @@ export interface ISubscriptionDao {
 export class SubscriptionDao implements ISubscriptionDao {
     private subscriptionRepository = SequelizeConnection.getInstance().getRepository(Subscription);
 
+    @NameCallerArgsReturnLogDaosInfoLevel('Subscription')
     public async getAll(): Promise<ISubscription[]> {
         return this.subscriptionRepository.findAll();
     }
 
+    @NameCallerArgsReturnLogDaosInfoLevel('Subscription')
     public async getOne(followerId: v4String, followedId: v4String): Promise<ISubscription | null> {
         return this.subscriptionRepository.findOne({
             where:
@@ -27,6 +29,7 @@ export class SubscriptionDao implements ISubscriptionDao {
         });
     }
 
+    @NameCallerArgsReturnLogDaosInfoLevel('Subscription')
     public async add(subscription: ISubscription): Promise<any> {
         return this.subscriptionRepository.create(subscription);
     }
@@ -34,6 +37,7 @@ export class SubscriptionDao implements ISubscriptionDao {
      *
      * @param subscription
      */
+    @NameCallerArgsReturnLogDaosInfoLevel('Subscription')
     public async update(subscription: ISubscription): Promise<any> {
 
         return this.subscriptionRepository.update(subscription, {
@@ -49,6 +53,7 @@ export class SubscriptionDao implements ISubscriptionDao {
      * @param followerId
      * @param followedId
      */
+    @NameCallerArgsReturnLogDaosInfoLevel('Subscription')
     public async delete(followerId: v4String, followedId: v4String): Promise<any> {
 
         return this.subscriptionRepository.destroy({
