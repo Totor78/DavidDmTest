@@ -8,7 +8,7 @@ export interface IUserIAM {
     email: string;
 }
 
-export class UserIAM implements IUserIAM {
+export class UserIAMEntity implements IUserIAM {
 
     public id?: v4String;
     public username: string;

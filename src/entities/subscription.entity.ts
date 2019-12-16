@@ -12,30 +12,30 @@ import {
 } from 'sequelize-typescript';
 import { BuildOptions, DataTypes} from 'sequelize';
 import {v4String} from 'uuid/interfaces';
-import {User} from './User';
+import {UserEntity} from './user.entity';
 
 export interface ISubscription {
     followedId: v4String;
-    followed: User;
+    followed: UserEntity;
     followerId: v4String;
-    follower: User;
+    follower: UserEntity;
 }
 
 @Table({paranoid: true, tableName: 'subscription'})
-export class Subscription extends Model<Subscription> implements ISubscription {
+export class SubscriptionEntity extends Model<SubscriptionEntity> implements ISubscription {
     @PrimaryKey
-    @ForeignKey(() => User)
+    @ForeignKey(() => UserEntity)
     @Column(DataTypes.UUID)
     public followedId!: v4String;
 
-    @BelongsTo(() => User)
-    public followed!: User;
+    @BelongsTo(() => UserEntity)
+    public followed!: UserEntity;
 
     @PrimaryKey
-    @ForeignKey(() => User)
+    @ForeignKey(() => UserEntity)
     @Column( DataTypes.UUID)
     public followerId!: v4String;
 
-    @BelongsTo(() => User)
-    public follower!: User;
+    @BelongsTo(() => UserEntity)
+    public follower!: UserEntity;
 }

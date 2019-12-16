@@ -1,10 +1,10 @@
 import {Column, ForeignKey, Length, Model, NotNull, PrimaryKey, Table} from 'sequelize-typescript';
 import {BuildOptions, DataTypes} from 'sequelize';
 import {v4String} from 'uuid/interfaces';
-import {User} from './User';
+import {UserEntity} from './user.entity';
 
 @Table({paranoid: true, tableName: 'theme'})
-export class Theme extends Model<Theme> {
+export class ThemeEntity extends Model<ThemeEntity> {
 
     @PrimaryKey
     @Length({max: 20})
@@ -15,7 +15,7 @@ export class Theme extends Model<Theme> {
     @Column
     public value?: string;
 
-    @ForeignKey(() => User)
+    @ForeignKey(() => UserEntity)
     @Column(DataTypes.UUID)
     private userId?: v4String;
 }

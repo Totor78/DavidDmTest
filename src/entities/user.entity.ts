@@ -12,21 +12,21 @@ import {
 } from 'sequelize-typescript';
 import {BuildOptions, DataTypes} from 'sequelize';
 import {v4String} from 'uuid/interfaces';
-import {Theme} from './Theme';
-import {Subscription} from './Subscription';
+import {ThemeEntity} from './theme.entity';
+import {SubscriptionEntity} from './subscription.entity';
 
 export interface IUser {
     id: v4String;
     description: string;
     birthday: Date;
-    Theme: Theme;
+    Theme: ThemeEntity;
     picture: string;
-    followers: Subscription[];
-    follows: Subscription[];
+    followers: SubscriptionEntity[];
+    follows: SubscriptionEntity[];
 }
 
 @Table({paranoid: true, tableName: 'user'})
-export class User extends Model<User> implements IUser {
+export class UserEntity extends Model<UserEntity> implements IUser {
 
     @PrimaryKey
     @Default(DataTypes.UUIDV4)
@@ -40,16 +40,16 @@ export class User extends Model<User> implements IUser {
     @Column(DataTypes.DATE)
     public birthday!: Date;
 
-    @HasOne(() => Theme)
-    public Theme!: Theme;
+    @HasOne(() => ThemeEntity)
+    public Theme!: ThemeEntity;
 
     @Column(DataTypes.STRING)
     public picture!: string;
 
-    @HasMany(() => Subscription, 'followerId')
-    public followers!: Subscription[];
+    @HasMany(() => SubscriptionEntity, 'followerId')
+    public followers!: SubscriptionEntity[];
 
-    @HasMany(() => Subscription, 'followedId')
-    public follows!: Subscription[];
+    @HasMany(() => SubscriptionEntity, 'followedId')
+    public follows!: SubscriptionEntity[];
 
 }

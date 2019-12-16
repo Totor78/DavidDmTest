@@ -5,13 +5,14 @@ import { BAD_REQUEST, CREATED, OK } from 'http-status-codes';
 import { paramMissingError } from '@shared';
 import { ParamsDictionary } from 'express-serve-static-core';
 import {} from 'jwt-decode';
-import {getuserByName, getusers} from '../services/user';
 import jwt_decode from 'jwt-decode';
 import {kStringMaxLength} from 'buffer';
 import {on} from 'cluster';
+import {UserService} from '../services/user.service';
 // Init shared
 const router = Router();
 const userDao = new UserDao();
+const userService = new UserService();
 
 /******************************************************************************
  *                      Get All Users - "GET /api/users/all"
@@ -19,7 +20,6 @@ const userDao = new UserDao();
 
 router.get('', async (req: Request, res: Response) => {
     try {
-        // tslint:disable-next-line:no-console
         const users = await userDao.getAll();
         return res.status(OK).json({users});
     } catch (err) {
@@ -63,7 +63,7 @@ router.get('/follows/:id', async (req: Request, res: Response) => {
     }
 });
 /******************************************************************************
- *                      Get one UserIAM - "GET /api/users/:id"
+ *                      Get one UserIAMEntity - "GET /api/users/:id"
  ******************************************************************************/
 
 router.get('/:id', async (req: Request, res: Response) => {
@@ -81,14 +81,14 @@ router.get('/:id', async (req: Request, res: Response) => {
 });
 
 /******************************************************************************
- *                      Get all UserIAM - "GET /api/users/keycloak"
+ *                      Get all UserIAMEntity - "GET /api/users/keycloak"
  ******************************************************************************/
 router.get('/keycloak/', async (req: Request, res: Response) => {
     const authorization = req.headers.authorization;
     try {
         if (authorization != null) {
             const onlyBearer = authorization.split(' ', 2);
-            const kcusers = await getusers(onlyBearer[1]);
+            const kcusers = await userService.getUsers(onlyBearer[1]);
             const str = res.status(OK).json({kcusers});
             return str;
         }
@@ -101,7 +101,7 @@ router.get('/keycloak/', async (req: Request, res: Response) => {
 });
 
 /******************************************************************************
- *                      Get one UserIAM - "GET /api/users/byName/:name"
+ *                      Get one UserIAMEntity - "GET /api/users/byName/:name"
  ******************************************************************************/
 router.get('/keycloak/:name', async (req: Request, res: Response) => {
     const authorization = req.headers.authorization;
@@ -109,7 +109,7 @@ router.get('/keycloak/:name', async (req: Request, res: Response) => {
         if (authorization != null) {
             const onlyBearer = authorization.split(' ', 2);
             const {name} = req.params;
-            const user = await getuserByName(onlyBearer[1], name);
+            const user = await userService.getUserByName(onlyBearer[1], name);
             const str = res.status(OK).json({user});
         }
     } catch (err) {

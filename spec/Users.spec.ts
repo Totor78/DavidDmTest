@@ -3,7 +3,7 @@ import supertest from 'supertest';
 
 import { BAD_REQUEST, CREATED, OK } from 'http-status-codes';
 import { Response, SuperTest, Test } from 'supertest';
-import {IUserIAM, UserIAM} from '@entities';
+import {IUserIAM, UserIAMEntity} from '@entities';
 import { UserDao } from '@daos';
 import { pErr, paramMissingError } from '@shared';
 
@@ -28,17 +28,17 @@ describe('Users Routes', () => {
             request was successful.`, (done) => {
 
             const users = [
-                new UserIAM({
+                new UserIAMEntity({
                     username: 'sMaxwell',
                     firstName: 'Sean',
                     lastName: 'Maxwell',
                     email: 'sean.maxwell@gmail.com'}),
-                new UserIAM({
+                new UserIAMEntity({
                     username: 'jSmith',
                     firstName: 'John',
                     lastName: 'Smith',
                     email: 'john.smith@gmail.com'}),
-                new UserIAM({
+                new UserIAMEntity({
                     username: 'gFreeman',
                     firstName: 'Gordan',
                     lastName: 'Freeman',
@@ -51,9 +51,9 @@ describe('Users Routes', () => {
                 .end((err: Error, res: Response) => {
                     pErr(err);
                     expect(res.status).toBe(OK);
-                    // Caste instance-objects to 'UserIAM' objects
+                    // Caste instance-objects to 'UserIAMEntity' objects
                     const retUsers = res.body.users.map((user: IUserIAM) => {
-                        return new UserIAM(user);
+                        return new UserIAMEntity(user);
                     });
                     expect(retUsers).toEqual(users);
                     expect(res.body.error).toBeUndefined();
@@ -85,7 +85,7 @@ describe('Users Routes', () => {
         };
 
         const userData = {
-            user: new UserIAM({
+            user: new UserIAMEntity({
                 username: 'gFreeman',
                 firstName: 'Gordan',
                 lastName: 'Freeman',
@@ -140,7 +140,7 @@ describe('Users Routes', () => {
         };
 
         const userData = {
-            user: new UserIAM({
+            user: new UserIAMEntity({
                 username: 'gFreemanAAAAA',
                 firstName: 'Gordan',
                 lastName: 'Freeman',

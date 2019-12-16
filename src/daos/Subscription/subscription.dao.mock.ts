@@ -1,8 +1,8 @@
 import { MockDaoMock } from '../MockDb/MockDao.mock';
-import { ISubscriptionDao } from './SubscriptionDao';
+import { ISubscriptionDao } from './subscription.dao';
 import uuid from 'uuid';
 import {v4String} from 'uuid/interfaces';
-import {IUser} from '../../entities/User';
+import {IUser} from '../../entities/user.entity';
 import {ISubscription} from '@entities';
 
 export class SubscriptionDao extends MockDaoMock implements ISubscriptionDao {

@@ -1,6 +1,6 @@
 const usingMockDb = (process.env.USE_MOCK_DB || '').toLowerCase();
-let userDaoPath = './User/UserDao';
-let subDaoPath = './Subscription/SubscriptionDao';
+let userDaoPath = './User/user.dao';
+let subDaoPath = './Subscription/subscription.dao';
 
 if (usingMockDb === 'true') {
     userDaoPath += '.mock';
