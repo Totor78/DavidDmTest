@@ -67,11 +67,16 @@ router.get('/follows/:id', async (req: Request, res: Response) => {
  ******************************************************************************/
 
 router.get('/:id', async (req: Request, res: Response) => {
+    const authorization = req.headers.authorization;
     try {
-            const { id } = req.params;
-            const users = await userDao.getOne(id);
+        if (authorization != null) {
+            const onlyBearer = authorization.split(' ', 2);
+            const kcusers = await getusers(onlyBearer[1]);
+            const {id} = req.params;
+            const users = await userDao.getOne(id, kcusers);
             const str = res.status(OK).json({users});
             return str;
+        }
     } catch (err) {
         logger.error(err.message, err);
         return res.status(BAD_REQUEST).json({
@@ -103,7 +108,7 @@ router.get('/keycloak/', async (req: Request, res: Response) => {
 /******************************************************************************
  *                      Get one UserIAM - "GET /api/users/byName/:name"
  ******************************************************************************/
-router.get('/keycloak/:name', async (req: Request, res: Response) => {
+router.get('/:id', async (req: Request, res: Response) => {
     const authorization = req.headers.authorization;
     try {
         if (authorization != null) {
