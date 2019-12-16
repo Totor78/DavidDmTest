@@ -39,11 +39,10 @@ export class UserDao implements IUserDao {
      * @param id
      */
     public async getFollowsByUser(id: v4String): Promise<any> {
-        return this.userRepository.findByPk(id.toString(), {
-            include: [{
-                model: this.subscriptionRepository,
-                as: 'follows',
-            }],
+        return this.subscriptionRepository.findAll({
+            where: {
+                followerId: id.toString(),
+            },
         });
     }
     public async add(user: IUser): Promise<any> {
