@@ -36,10 +36,26 @@ export class UserIAMService implements IUserIAMService {
     public async getUserByName(authorization: string, name: string): Promise<any> {
         try {
             this.kcAdminClient.setAccessToken(authorization);
-            const users = await this.kcAdminClient.users.find();
+            const users = await this.kcAdminClient.users.find({
+                username: name,
+            });
             return users;
         } catch (e) {
             return e;
         }
     }
+
+    @NameCallerArgsReturnLogServicesInfoLevel('UserIAM')
+    public async getUserById(authorization: string, id: string): Promise<any> {
+        try {
+            this.kcAdminClient.setAccessToken(authorization);
+            const users = await this.kcAdminClient.users.find({
+                id: id,
+            });
+            return users;
+        } catch (e) {
+            return e;
+        }
+    }
+
 }

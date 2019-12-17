@@ -40,12 +40,12 @@ export class UserService implements IUserService {
 
     @NameCallerArgsReturnLogServicesInfoLevel('User')
     public async getFollowersOfUser(id: v4String): Promise<IUser[]> {
-        return this.userDao.getFollowersOfUser(id);
+        return this.userDao.getFollowerByUser(id);
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('User')
     public async getFollowsOfUser(id: v4String): Promise<IUser[]> {
-        return this.userDao.getFollowsOfUser(id);
+        return this.userDao.getFollowsByUser(id);
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('User')

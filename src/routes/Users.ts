@@ -5,13 +5,11 @@ import { BAD_REQUEST, CREATED, OK } from 'http-status-codes';
 import { paramMissingError } from '@shared';
 import { ParamsDictionary } from 'express-serve-static-core';
 import {} from 'jwt-decode';
-import {getuserByName, getusers} from '../services/user';
-import jwt_decode from 'jwt-decode';
-import {kStringMaxLength} from 'buffer';
-import {on} from 'cluster';
+import {UserIAMService} from '../services/userIAM.service';
 // Init shared
 const router = Router();
 const userDao = new UserDao();
+const userIAMService = new UserIAMService();
 
 /******************************************************************************
  *                      Get All Users - "GET /api/users/all"
@@ -67,11 +65,16 @@ router.get('/follows/:id', async (req: Request, res: Response) => {
  ******************************************************************************/
 
 router.get('/:id', async (req: Request, res: Response) => {
+    const authorization = req.headers.authorization;
     try {
-            const { id } = req.params;
-            const users = await userDao.getOne(id);
+        const { id } = req.params;
+        if (authorization != null) {
+            const onlyBearer = authorization.split(' ', 2);
+            const kcuser = await userIAMService.getUserById(onlyBearer[1], id);
+            const users = await userDao.getOne(id, kcuser);
             const str = res.status(OK).json({users});
             return str;
+        }
     } catch (err) {
         logger.error(err.message, err);
         return res.status(BAD_REQUEST).json({
@@ -88,7 +91,7 @@ router.get('/keycloak/', async (req: Request, res: Response) => {
     try {
         if (authorization != null) {
             const onlyBearer = authorization.split(' ', 2);
-            const kcusers = await getusers(onlyBearer[1]);
+            const kcusers = await userIAMService.getUsers(onlyBearer[1]);
             const str = res.status(OK).json({kcusers});
             return str;
         }
@@ -109,7 +112,7 @@ router.get('/keycloak/:name', async (req: Request, res: Response) => {
         if (authorization != null) {
             const onlyBearer = authorization.split(' ', 2);
             const {name} = req.params;
-            const user = await getuserByName(onlyBearer[1], name);
+            const user = await userIAMService.getUserByName(onlyBearer[1], name);
             const str = res.status(OK).json({user});
         }
     } catch (err) {

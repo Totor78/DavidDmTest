@@ -16,7 +16,7 @@ import {SubscriptionEntity} from './subscription.entity';
 import {ApiModel, ApiModelProperty} from 'swagger-express-ts';
 import {Path} from 'typescript-rest';
 
-enum eTheme {
+export enum eTheme {
     BASIC,
     DARK,
 }

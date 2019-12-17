@@ -1,7 +1,9 @@
 import {v4String} from 'uuid/interfaces';
 import {SequelizeConnection} from '@shared';
-import {IUser, User} from '@entities';
-import {ISubscription, Subscription} from '@entities';
+import {IUser, UserEntity} from '@entities';
+import {UserIAMEntity} from '@entities';
+import {ISubscription, SubscriptionEntity} from '@entities';
+import IUserMerge, {UserMerge} from '../../entities/UserMerge';
 export interface IUserDao {
     getAll: () => Promise<IUser[]>;
     getOne: (id: v4String) => Promise<IUser|null>;
@@ -13,16 +15,19 @@ export interface IUserDao {
 }
 
 export class UserDao implements IUserDao {
-    private userRepository = SequelizeConnection.getInstance().getRepository(User);
-    private subscriptionRepository = SequelizeConnection.getInstance().getRepository(Subscription);
+    private userRepository = SequelizeConnection.getInstance().getRepository(UserEntity);
+    private subscriptionRepository = SequelizeConnection.getInstance().getRepository(SubscriptionEntity);
     public async getAll(): Promise<IUser[]> {
         return this.userRepository.findAll();
     }
     /**
      * @param id of the user to return
      */
-    public async getOne(id: v4String): Promise<IUser|null> {
-        return this.userRepository.findOne({ where: {id: String(id) }});
+    public async getOne(id: v4String, userIAM: UserIAMEntity): Promise<IUserMerge|null> {
+        const userEntity = new UserEntity(this.userRepository.findOne({ where: {id: String(id) }}));
+        const userIAMEntity = new UserIAMEntity(userIAM);
+        const merge = {...userIAMEntity, ...userEntity};
+        return new UserMerge(merge);
     }
     /**
      * @param id

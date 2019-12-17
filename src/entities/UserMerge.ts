@@ -1,46 +1,36 @@
-import {IUser} from './User';
-import {IUserIAM} from './UserIAM';
+import {IUser, eTheme} from './user.entity';
+import {IUserIAM} from './userIAM.entity';
 import {v4String} from 'uuid/interfaces';
-import {Subscription} from './Subscription';
-import {Theme} from './Theme';
+import {SubscriptionEntity} from './subscription.entity';
 
-export default interface IUserMerge extends IUser, IUserIAM {
-    Theme: Theme;
-    birthday: Date;
-    description: string;
-    email: string;
-    firstName: string;
-    followers: Subscription[];
-    follows: Subscription[];
-    idMerge: v4String | undefined;
-    lastName: string;
-    picture: string;
-    username: string;
+export default interface IUserMerge extends IUserIAM, IUser {
+    idUser?: v4String;
 }
+
 export class UserMerge implements IUserMerge {
-    public Theme: Theme;
-    public birthday: Date;
-    public description: string;
-    public email: string;
-    public firstName: string;
-    public followers: Subscription[];
-    public follows: Subscription[];
-    public idMerge: v4String | undefined;
-    public lastName: string;
-    public picture: string;
-    public username: string;
-    // tslint:disable-next-line:max-line-length
-    constructor(theme: Theme, birthday: Date, description: string, email: string, firstName: string, followers: Subscription[], follows: Subscription[], idMerge: v4String | undefined, lastName: string, picture: string, username: string) {
-        this.username = username;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.Theme = theme;
-        this.birthday = birthday;
-        this.description = description;
-        this.followers = followers;
-        this.follows = follows;
-        this.idMerge = idMerge;
-        this.picture = picture;
+    public dateOfBirth!: Date;
+    public description!: string;
+    public email!: string;
+    public firstName!: string;
+    public followers!: SubscriptionEntity[];
+    public follows!: SubscriptionEntity[];
+    public id!: v4String;
+    public lastName!: string;
+    public pictureId!: v4String;
+    public theme!: eTheme;
+    public username!: string;
+    public idUser?: v4String;
+    constructor(userMerge: IUserMerge) {
+    this.dateOfBirth = userMerge.dateOfBirth;
+    this.description = userMerge.description;
+    this.email = userMerge.email;
+    this.firstName = userMerge.firstName;
+    this.followers = userMerge.followers;
+    this.follows = userMerge.follows;
+    this.lastName = userMerge.lastName;
+    this.pictureId = userMerge.pictureId;
+    this.theme = userMerge.theme;
+    this.username = userMerge.username;
+    this.idUser = userMerge.idUser;
     }
 }

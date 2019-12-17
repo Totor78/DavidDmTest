@@ -4,7 +4,7 @@ import {Path} from 'typescript-rest';
 import {Table} from 'sequelize-typescript';
 
 export interface IUserIAM {
-    id?: v4String;
+    id: v4String;
     username: string;
     firstName: string;
     lastName: string;
@@ -24,7 +24,7 @@ export class UserIAMEntity implements IUserIAM {
         required: true,
         example: ['75442486-0878-440c-9db1-a7006c25a39f'],
     })
-    public id?: v4String;
+    public id: v4String;
 
     @ApiModelProperty({
         description: 'username of a User',
@@ -55,6 +55,7 @@ export class UserIAMEntity implements IUserIAM {
     public email: string;
 
     constructor(user: IUserIAM) {
+        this.id = user.id;
         this.username = user.username;
         this.firstName = user.firstName;
         this.lastName = user.lastName;
