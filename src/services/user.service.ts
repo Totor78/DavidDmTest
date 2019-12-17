@@ -1,42 +1,55 @@
-import KcAdminClient from 'keycloak-admin';
-import {KeycloakAdminClient} from 'keycloak-admin/lib/client';
+import {IUser} from '@entities';
+import {v4String} from 'uuid/interfaces';
+import {UserDao} from '@daos';
+import {NameCallerArgsReturnLogServicesInfoLevel} from '@shared';
+import {IUserDao} from '../daos/User/user.dao';
 
 export interface IUserService {
-    getUsers(authorization: string): Promise<any>;
-    getUserByName(authorization: string, name: string): Promise<any>;
+    getAll: () => Promise<IUser[]>;
+    getUserById: (id: v4String) => Promise<IUser|null>;
+    getFollowersOfUser: (id: v4String) => Promise<IUser[]>;
+    getFollowsOfUser: (id: v4String) => Promise<IUser[]>;
+    add: (user: IUser) => Promise<any>;
+    update: (user: IUser) => Promise<any>;
+    delete: (id: v4String) => Promise<any>;
 }
 
 export class UserService implements IUserService {
 
-    private kcAdminClient: KcAdminClient;
+    private userDao: IUserDao = new UserDao();
 
-    constructor() {
-        this.kcAdminClient = new KeycloakAdminClient();
-        this.kcAdminClient.setConfig({
-            baseUrl: 'http://keycloak.erzo.wtf/auth',
-            realmName: 'master',
-        });
+    @NameCallerArgsReturnLogServicesInfoLevel('User')
+    public async add(user: IUser): Promise<any> {
+        return this.userDao.add(user);
     }
 
-    public async getUsers(authorization: string): Promise<any> {
-        try {
-            this.kcAdminClient.setAccessToken(authorization);
-            const user = await this.kcAdminClient.users.find({
-                username: name,
-            });
-            return user;
-        } catch (e) {
-            return e;
-        }
+    @NameCallerArgsReturnLogServicesInfoLevel('User')
+    public async delete(id: v4String): Promise<any> {
+        return this.userDao.delete(id);
     }
 
-    public async getUserByName(authorization: string, name: string): Promise<any> {
-        try {
-            this.kcAdminClient.setAccessToken(authorization);
-            const users = await this.kcAdminClient.users.find();
-            return users;
-        } catch (e) {
-            return e;
-        }
+    @NameCallerArgsReturnLogServicesInfoLevel('User')
+    public async getAll(): Promise<IUser[]> {
+        return this.userDao.getAll();
+    }
+
+    @NameCallerArgsReturnLogServicesInfoLevel('User')
+    public async getUserById(id: v4String): Promise<IUser|null> {
+        return this.userDao.getOne(id);
+    }
+
+    @NameCallerArgsReturnLogServicesInfoLevel('User')
+    public async getFollowersOfUser(id: v4String): Promise<IUser[]> {
+        return this.userDao.getFollowersOfUser(id);
+    }
+
+    @NameCallerArgsReturnLogServicesInfoLevel('User')
+    public async getFollowsOfUser(id: v4String): Promise<IUser[]> {
+        return this.userDao.getFollowsOfUser(id);
+    }
+
+    @NameCallerArgsReturnLogServicesInfoLevel('User')
+    public async update(user: IUser): Promise<any> {
+        return this.userDao.update(user);
     }
 }

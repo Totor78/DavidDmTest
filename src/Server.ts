@@ -1,33 +1,49 @@
 import cookieParser from 'cookie-parser';
 import express from 'express';
-import { Request, Response } from 'express';
 import logger from 'morgan';
-import path from 'path';
-import BaseRouter from './routes';
-import swaggerUi from 'swagger-ui-express';
-import * as swaggerDocument from './swagger.json';
 import {KeycloakMiddleware} from './shared/Keycloak';
 import cors from 'cors';
+import 'reflect-metadata';
+import {InversifyExpressServer} from 'inversify-express-utils';
+import container from './shared/Container';
+import * as swagger from 'swagger-express-ts';
+import * as bodyParser from 'body-parser';
+import {globalInfoLogger} from '@shared';
 
-// Init express
-const app = express();
-// Add middleware/settings/routes to express.
-const keycloak = KeycloakMiddleware.getInstance();
-// Add middleware/settings/routes to express.
-const allowedOrigins = ['http://127.0.0.1:3000/', 'http://localhost:3000/', 'http://erzo.wtf/'];
-app.use(cors({
-    origin: allowedOrigins,
-    credentials: true,
-}));
-app.use(keycloak.middleware());
-app.use('/users', BaseRouter);
+const server = new InversifyExpressServer(container);
+server.setConfig((appConfig: any) => {
+    appConfig.use( bodyParser.json() );
+    const allowedOrigins = ['http://localhost:3001/', 'http://localhost:3000/', 'http://erzo.wtf/'];
+    appConfig.use(cors({
+        origin: allowedOrigins,
+        credentials: true,
+    }));
+    appConfig.use(KeycloakMiddleware.getInstance().middleware());
+    appConfig.use(logger('dev'));
+    appConfig.use(express.json());
+    appConfig.use(express.urlencoded({extended: true}));
+    appConfig.use(cookieParser());
+    appConfig.use( '/api-docs/users/swagger' , express.static( 'swagger' ) );
+    appConfig.use( '/api-docs/users/swagger/assets' , express.static( 'node_modules/swagger-ui-dist' ) );
+    appConfig.use( swagger.express(
+        {
+            definition : {
+                info : {
+                    title : 'Users micro-service',
+                    version : '1.0',
+                },
+            },
+            path: '/api-docs/users/swagger.json',
+        },
+    ));
+});
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({extended: true}));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+server.setErrorConfig((appErr: any) => {
+    appErr.use((err: Error, request: express.Request, response: express.Response, next: express.NextFunction ) => {
+        globalInfoLogger.error(err);
+        response.status(500).send('Something broke!');
+    });
+});
 
-// Export express instance
+const app = server.build();
 export default app;

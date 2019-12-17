@@ -8,8 +8,8 @@ export interface IUserDao {
     add: (user: IUser) => Promise<any>;
     update: (user: IUser) => Promise<any>;
     delete: (id: v4String) => Promise<void>;
-    getFollowerByUser: (id: v4String) => Promise<any>;
-    getFollowsByUser: (id: v4String) => Promise<any>;
+    getFollowersOfUser: (id: v4String) => Promise<any>;
+    getFollowsOfUser: (id: v4String) => Promise<any>;
 }
 
 export class UserDao implements IUserDao {
@@ -31,7 +31,7 @@ export class UserDao implements IUserDao {
      * @param id
      */
     @NameCallerArgsReturnLogDaosInfoLevel('User')
-    public async getFollowerByUser(id: v4String): Promise<any> {
+    public async getFollowersOfUser(id: v4String): Promise<any> {
          return this.userRepository.findByPk(id.toString(), {
             include: [{
                 model: this.subscriptionRepository,
@@ -43,7 +43,7 @@ export class UserDao implements IUserDao {
      * @param id
      */
     @NameCallerArgsReturnLogDaosInfoLevel('User')
-    public async getFollowsByUser(id: v4String): Promise<any> {
+    public async getFollowsOfUser(id: v4String): Promise<any> {
         return this.subscriptionRepository.findAll({
             where: {
                 followerId: id.toString(),
