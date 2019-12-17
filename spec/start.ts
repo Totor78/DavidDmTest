@@ -1,6 +1,6 @@
 import find from 'find';
 import Jasmine from 'jasmine';
-import { logger } from '@shared';
+import { globalInfoLogger } from '@shared';
 
 // Init Jasmine
 const jasmine = new Jasmine(null);
@@ -18,9 +18,9 @@ jasmine.loadConfig({
 // On complete callback function
 jasmine.onComplete((passed: boolean) => {
     if (passed) {
-        logger.info('All tests have passed :)');
+        globalInfoLogger.info('All tests have passed :)');
     } else {
-        logger.error('At least one test has failed :(');
+        globalInfoLogger.error('At least one test has failed :(');
     }
 });
 
@@ -32,10 +32,9 @@ if (process.argv[2]) {
             jasmine.specFiles = [files[0]];
             jasmine.execute();
         } else {
-            logger.error('Test file not found!');
+            globalInfoLogger.error('Test file not found!');
         }
     });
 } else {
     jasmine.execute();
 }
-

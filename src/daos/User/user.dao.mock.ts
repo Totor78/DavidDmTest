@@ -1,8 +1,8 @@
 import { MockDaoMock } from '../MockDb/MockDao.mock';
-import { IUserDao } from './UserDao';
+import { IUserDao } from './user.dao';
 import uuid = require('uuid');
 import {v4String} from 'uuid/interfaces';
-import {IUser} from '../../entities/User';
+import {IUser} from '../../entities/user.entity';
 
 export class UserDao extends MockDaoMock implements IUserDao {
 
@@ -19,11 +19,11 @@ export class UserDao extends MockDaoMock implements IUserDao {
         return null as any;
     }
 
-    public async getFollowerByUser(id: v4String): Promise<any> {
+    public async getFollowersOfUser(id: v4String): Promise<any> {
         return null as any;
     }
 
-    public async getFollowsByUser(id: v4String): Promise<any> {
+    public async getFollowsOfUser(id: v4String): Promise<any> {
         return null as any;
     }
 
@@ -48,7 +48,7 @@ export class UserDao extends MockDaoMock implements IUserDao {
                     return;
                 }
             }
-            throw new Error('UserIAM not found');
+            throw new Error('UserIAMEntity not found');
         } catch (err) {
             throw err;
         }
@@ -64,7 +64,7 @@ export class UserDao extends MockDaoMock implements IUserDao {
                     return;
                 }
             }
-            throw new Error('UserIAM not found');
+            throw new Error('UserIAMEntity not found');
         } catch (err) {
             throw err;
         }

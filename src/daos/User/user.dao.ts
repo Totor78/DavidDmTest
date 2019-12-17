@@ -1,11 +1,10 @@
 import {v4String} from 'uuid/interfaces';
 import {SequelizeConnection} from '@shared';
-import {IUser, User, UserIAM} from '@entities';
+import {IUser, User} from '@entities';
 import {ISubscription, Subscription} from '@entities';
-import {IUserMerge, UserMerge} from '../../entities/UserMerge';
 export interface IUserDao {
     getAll: () => Promise<IUser[]>;
-    getOne: (id: v4String, userKc: UserIAM) => Promise<IUserMerge|null>;
+    getOne: (id: v4String) => Promise<IUser|null>;
     add: (user: IUser) => Promise<any>;
     update: (user: IUser) => Promise<any>;
     delete: (id: v4String) => Promise<void>;
@@ -22,11 +21,8 @@ export class UserDao implements IUserDao {
     /**
      * @param id of the user to return
      */
-    public async getOne(id: v4String, userKc: UserIAM): Promise<IUserMerge|null> {
-         const user = new User(this.userRepository.findOne({ where: {id: String(id) }}));
-        // tslint:disable-next-line:max-line-length
-         const usermerge = new UserMerge(user.Theme, user.birthday, user.description, userKc.email, userKc.firstName, user.followers, user.follows, userKc.id, userKc.lastName, user.picture, userKc.username);
-         return usermerge;
+    public async getOne(id: v4String): Promise<IUser|null> {
+        return this.userRepository.findOne({ where: {id: String(id) }});
     }
     /**
      * @param id

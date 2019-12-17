@@ -1,4 +1,3 @@
-export * from './Subscription';
-export * from './UserIAM';
-export * from './User';
-export * from  './Theme';
+export * from './subscription.entity';
+export * from './userIAM.entity';
+export * from './user.entity';
