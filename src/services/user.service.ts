@@ -3,10 +3,11 @@ import {v4String} from 'uuid/interfaces';
 import {UserDao} from '@daos';
 import {NameCallerArgsReturnLogServicesInfoLevel} from '@shared';
 import {IUserDao} from '../daos/User/user.dao';
+import {UserIAMService} from './userIAM.service';
 
 export interface IUserService {
     getAll: () => Promise<IUser[]>;
-    getUserById: (id: v4String) => Promise<IUser|null>;
+    getUserById: (id: string, authorization: string) => Promise<IUser|null>;
     getFollowersOfUser: (id: v4String) => Promise<IUser[]>;
     getFollowsOfUser: (id: v4String) => Promise<IUser[]>;
     add: (user: IUser) => Promise<any>;
@@ -17,6 +18,7 @@ export interface IUserService {
 export class UserService implements IUserService {
 
     private userDao: IUserDao = new UserDao();
+    private userIAMService = new UserIAMService();
 
     @NameCallerArgsReturnLogServicesInfoLevel('User')
     public async add(user: IUser): Promise<any> {
@@ -34,8 +36,10 @@ export class UserService implements IUserService {
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('User')
-    public async getUserById(id: v4String): Promise<IUser|null> {
-        return this.userDao.getOne(id);
+    public async getUserById(id: string, authorization: string): Promise<IUser|null> {
+        const onlyBearer = authorization.split(' ', 2);
+        const kcuser = await this.userIAMService.getUserById(onlyBearer[1], id);
+        return this.userDao.getOne(id, kcuser);
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('User')

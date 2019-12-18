@@ -6,10 +6,12 @@ import { paramMissingError } from '@shared';
 import { ParamsDictionary } from 'express-serve-static-core';
 import {} from 'jwt-decode';
 import {UserIAMService} from '../services/userIAM.service';
-// Init shared
+import {UserService} from '../services/user.service';
+import v4 from 'uuid/v4';
 const router = Router();
 const userDao = new UserDao();
 const userIAMService = new UserIAMService();
+const userService = new UserService();
 
 /******************************************************************************
  *                      Get All Users - "GET /api/users/all"
@@ -69,9 +71,7 @@ router.get('/:id', async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
         if (authorization != null) {
-            const onlyBearer = authorization.split(' ', 2);
-            const kcuser = await userIAMService.getUserById(onlyBearer[1], id);
-            const users = await userDao.getOne(id, kcuser);
+            const users = userService.getUserById(id, authorization)
             const str = res.status(OK).json({users});
             return str;
         }

@@ -49,13 +49,10 @@ export class UserIAMService implements IUserIAMService {
     public async getUserById(authorization: string, id: string): Promise<any> {
         try {
             this.kcAdminClient.setAccessToken(authorization);
-            const users = await this.kcAdminClient.users.find({
-                id: id,
-            });
+            const users = await this.kcAdminClient.users.findOne({id});
             return users;
         } catch (e) {
             return e;
         }
     }
-
 }

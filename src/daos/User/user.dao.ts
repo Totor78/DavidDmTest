@@ -6,7 +6,7 @@ import {ISubscription, SubscriptionEntity} from '@entities';
 import IUserMerge, {UserMerge} from '../../entities/UserMerge';
 export interface IUserDao {
     getAll: () => Promise<IUser[]>;
-    getOne: (id: v4String) => Promise<IUser|null>;
+    getOne: (id: string, userIAM: UserIAMEntity) => Promise<IUserMerge|null>;
     add: (user: IUser) => Promise<any>;
     update: (user: IUser) => Promise<any>;
     delete: (id: v4String) => Promise<void>;
@@ -23,7 +23,7 @@ export class UserDao implements IUserDao {
     /**
      * @param id of the user to return
      */
-    public async getOne(id: v4String, userIAM: UserIAMEntity): Promise<IUserMerge|null> {
+    public async getOne(id: string, userIAM: UserIAMEntity): Promise<IUserMerge|null> {
         const userEntity = new UserEntity(this.userRepository.findOne({ where: {id: String(id) }}));
         const userIAMEntity = new UserIAMEntity(userIAM);
         const merge = {...userIAMEntity, ...userEntity};

@@ -376,13 +376,14 @@ export class UserController implements interfaces.Controller, IUserController {
         next: express.NextFunction,
     ): Promise<express.Response> {
         const {id} = request.params;
+        const authorization = request.headers.authorization;
         if (!idMatch(id)) {
             return response.status(BAD_REQUEST).json({
                 error: 'id must be uuid',
             });
         }
         try {
-            const user = await this.userService.getUserById(id as unknown as v4String);
+            const user = await this.userService.getUserById(id as unknown as string, authorization as unknown as string);
             return response.status(OK).json({user});
         } catch (err) {
             globalInfoLogger.error(err.message, err);
