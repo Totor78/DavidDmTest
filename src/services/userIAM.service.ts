@@ -1,15 +1,16 @@
-import KcAdminClient from 'keycloak-admin';
 import {KeycloakAdminClient} from 'keycloak-admin/lib/client';
 import {NameCallerArgsReturnLogServicesInfoLevel} from '@shared';
+import {v4String} from 'uuid/interfaces';
 
 export interface IUserIAMService {
-    getUsers(authorization: string): Promise<any>;
-    getUserByName(authorization: string, name: string): Promise<any>;
+    getUsers(token: string): Promise<any>;
+    getUserByName(token: string, name: string): Promise<any>;
+    getUserById(token: string, id: v4String): Promise<any>;
 }
 
 export class UserIAMService implements IUserIAMService {
 
-    private kcAdminClient: KcAdminClient;
+    private kcAdminClient: KeycloakAdminClient;
 
     constructor() {
         this.kcAdminClient = new KeycloakAdminClient();
@@ -20,37 +21,34 @@ export class UserIAMService implements IUserIAMService {
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('UserIAM')
-    public async getUsers(authorization: string): Promise<any> {
+    public async getUsers(token: string): Promise<any> {
         try {
-            this.kcAdminClient.setAccessToken(authorization);
-            const user = await this.kcAdminClient.users.find({
-                username: name,
-            });
-            return user;
+            this.kcAdminClient.setAccessToken(token);
+            return await this.kcAdminClient.users.find();
         } catch (e) {
             return e;
         }
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('UserIAM')
-    public async getUserByName(authorization: string, name: string): Promise<any> {
+    public async getUserByName(token: string, name: string): Promise<any> {
         try {
-            this.kcAdminClient.setAccessToken(authorization);
-            const users = await this.kcAdminClient.users.find({
+            this.kcAdminClient.setAccessToken(token);
+            return await this.kcAdminClient.users.find({
                 username: name,
             });
-            return users;
         } catch (e) {
             return e;
         }
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('UserIAM')
-    public async getUserById(authorization: string, id: string): Promise<any> {
+    public async getUserById(token: string, id: v4String): Promise<any> {
         try {
-            this.kcAdminClient.setAccessToken(authorization);
-            const users = await this.kcAdminClient.users.findOne({id});
-            return users;
+            this.kcAdminClient.setAccessToken(token);
+            return await this.kcAdminClient.users.findOne({
+                id: id.toString(),
+            });
         } catch (e) {
             return e;
         }

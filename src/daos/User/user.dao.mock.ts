@@ -2,7 +2,7 @@ import { MockDaoMock } from '../MockDb/MockDao.mock';
 import { IUserDao } from './user.dao';
 import uuid = require('uuid');
 import {v4String} from 'uuid/interfaces';
-import {IUser} from '../../entities/user.entity';
+import {IUser} from '@entities';
 
 export class UserDao extends MockDaoMock implements IUserDao {
 

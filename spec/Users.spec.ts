@@ -6,6 +6,7 @@ import { Response, SuperTest, Test } from 'supertest';
 import {IUserIAM, UserIAMEntity} from '@entities';
 import { UserDao } from '@daos';
 import { pErr, paramMissingError } from '@shared';
+import {v4, v4String} from 'uuid/interfaces';
 
 describe('Users Routes', () => {
 
@@ -29,16 +30,19 @@ describe('Users Routes', () => {
 
             const users = [
                 new UserIAMEntity({
+                    id: 'c498e2aa-1c42-4827-80be-9fc6edeeaee3' as unknown as v4String,
                     username: 'sMaxwell',
                     firstName: 'Sean',
                     lastName: 'Maxwell',
                     email: 'sean.maxwell@gmail.com'}),
                 new UserIAMEntity({
+                    id: '2edcdfe3-f82b-456f-a0a2-1a49eb73a76f' as unknown as v4String,
                     username: 'jSmith',
                     firstName: 'John',
                     lastName: 'Smith',
                     email: 'john.smith@gmail.com'}),
                 new UserIAMEntity({
+                    id: 'c89df2b6-3c62-4bc1-8516-b84df54453d4' as unknown as v4String,
                     username: 'gFreeman',
                     firstName: 'Gordan',
                     lastName: 'Freeman',

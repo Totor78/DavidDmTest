@@ -383,7 +383,7 @@ export class UserController implements interfaces.Controller, IUserController {
             });
         }
         try {
-            const user = await this.userService.getUserById(id as unknown as string, authorization as unknown as string);
+            const user = await this.userService.getUserById(id as unknown as v4String, authorization);
             return response.status(OK).json({user});
         } catch (err) {
             globalInfoLogger.error(err.message, err);

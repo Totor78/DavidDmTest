@@ -3,36 +3,35 @@ import {SequelizeConnection} from '@shared';
 import {IUser, UserEntity} from '@entities';
 import {UserIAMEntity} from '@entities';
 import {ISubscription, SubscriptionEntity} from '@entities';
-import IUserMerge, {UserMerge} from '../../entities/UserMerge';
+import IUserMerge, {UserMerge} from '../../entities/userMerge.entity';
 export interface IUserDao {
     getAll: () => Promise<IUser[]>;
-    getOne: (id: string, userIAM: UserIAMEntity) => Promise<IUserMerge|null>;
+    getOne: (id: v4String) => Promise<IUser|null>;
     add: (user: IUser) => Promise<any>;
     update: (user: IUser) => Promise<any>;
     delete: (id: v4String) => Promise<void>;
-    getFollowerByUser: (id: v4String) => Promise<any>;
-    getFollowsByUser: (id: v4String) => Promise<any>;
+    getFollowersOfUser: (id: v4String) => Promise<any>;
+    getFollowsOfUser: (id: v4String) => Promise<any>;
 }
 
 export class UserDao implements IUserDao {
     private userRepository = SequelizeConnection.getInstance().getRepository(UserEntity);
     private subscriptionRepository = SequelizeConnection.getInstance().getRepository(SubscriptionEntity);
+
     public async getAll(): Promise<IUser[]> {
         return this.userRepository.findAll();
     }
     /**
      * @param id of the user to return
+     * @param userIAM
      */
-    public async getOne(id: string, userIAM: UserIAMEntity): Promise<IUserMerge|null> {
-        const userEntity = new UserEntity(this.userRepository.findOne({ where: {id: String(id) }}));
-        const userIAMEntity = new UserIAMEntity(userIAM);
-        const merge = {...userIAMEntity, ...userEntity};
-        return new UserMerge(merge);
+    public async getOne(id: v4String): Promise<IUser|null> {
+        return this.userRepository.findOne({ where: {id: id.toString()}});
     }
     /**
      * @param id
      */
-    public async getFollowerByUser(id: v4String): Promise<any> {
+    public async getFollowersOfUser(id: v4String): Promise<any> {
          return this.userRepository.findByPk(id.toString(), {
             include: [{
                 model: this.subscriptionRepository,
@@ -43,7 +42,7 @@ export class UserDao implements IUserDao {
     /**
      * @param id
      */
-    public async getFollowsByUser(id: v4String): Promise<any> {
+    public async getFollowsOfUser(id: v4String): Promise<any> {
         return this.userRepository.findByPk(id.toString(), {
             include: [{
                 model: this.subscriptionRepository,
@@ -62,7 +61,7 @@ export class UserDao implements IUserDao {
 
         return this.userRepository.update(user, {
             where: {
-                id: String(user.id),
+                id: user.id.toString(),
             }});
     }
 
@@ -74,7 +73,7 @@ export class UserDao implements IUserDao {
 
         return this.userRepository.destroy( {
             where: {
-                id: String(id),
+                id: id.toString(),
             },
         });
     }

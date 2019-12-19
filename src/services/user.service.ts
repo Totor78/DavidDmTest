@@ -1,13 +1,14 @@
-import {IUser} from '@entities';
+import {IUser, IUserIAM, UserIAMEntity} from '@entities';
 import {v4String} from 'uuid/interfaces';
 import {UserDao} from '@daos';
 import {NameCallerArgsReturnLogServicesInfoLevel} from '@shared';
 import {IUserDao} from '../daos/User/user.dao';
 import {UserIAMService} from './userIAM.service';
+import IUserMerge, {UserMerge} from '../entities/userMerge.entity';
 
 export interface IUserService {
     getAll: () => Promise<IUser[]>;
-    getUserById: (id: string, authorization: string) => Promise<IUser|null>;
+    getUserById: (id: v4String, authorization: any) => Promise<IUser|null>;
     getFollowersOfUser: (id: v4String) => Promise<IUser[]>;
     getFollowsOfUser: (id: v4String) => Promise<IUser[]>;
     add: (user: IUser) => Promise<any>;
@@ -36,20 +37,25 @@ export class UserService implements IUserService {
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('User')
-    public async getUserById(id: string, authorization: string): Promise<IUser|null> {
-        const onlyBearer = authorization.split(' ', 2);
-        const kcuser = await this.userIAMService.getUserById(onlyBearer[1], id);
-        return this.userDao.getOne(id, kcuser);
+    public async getUserById(id: v4String, authorization: any): Promise<IUser|null> {
+        const token: string = authorization !== undefined ? authorization.split(' ')[1] : '';
+        const userIAM: IUserIAM = await this.userIAMService.getUserById(token, id)
+        const user: IUser|null = await this.userDao.getOne(id);
+        if (user !== null) {
+            return new UserMerge(user, userIAM);
+        } else {
+            return null;
+        }
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('User')
     public async getFollowersOfUser(id: v4String): Promise<IUser[]> {
-        return this.userDao.getFollowerByUser(id);
+        return this.userDao.getFollowersOfUser(id);
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('User')
     public async getFollowsOfUser(id: v4String): Promise<IUser[]> {
-        return this.userDao.getFollowsByUser(id);
+        return this.userDao.getFollowsOfUser(id);
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('User')

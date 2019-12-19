@@ -15,14 +15,14 @@ import {v4String} from 'uuid/interfaces';
 import {SubscriptionEntity} from './subscription.entity';
 import {ApiModel, ApiModelProperty} from 'swagger-express-ts';
 import {Path} from 'typescript-rest';
+import {IGlobalUser} from './globalUser.entity';
 
 export enum eTheme {
     BASIC,
     DARK,
 }
 
-export interface IUser {
-    id: v4String;
+export interface IUser extends IGlobalUser{
     description: string;
     dateOfBirth: Date;
     theme: eTheme;

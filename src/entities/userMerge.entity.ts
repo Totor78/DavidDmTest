@@ -4,7 +4,6 @@ import {v4String} from 'uuid/interfaces';
 import {SubscriptionEntity} from './subscription.entity';
 
 export default interface IUserMerge extends IUserIAM, IUser {
-    idUser?: v4String;
 }
 
 export class UserMerge implements IUserMerge {
@@ -19,18 +18,18 @@ export class UserMerge implements IUserMerge {
     public pictureId!: v4String;
     public theme!: eTheme;
     public username!: string;
-    public idUser?: v4String;
-    constructor(userMerge: IUserMerge) {
-    this.dateOfBirth = userMerge.dateOfBirth;
-    this.description = userMerge.description;
-    this.email = userMerge.email;
-    this.firstName = userMerge.firstName;
-    this.followers = userMerge.followers;
-    this.follows = userMerge.follows;
-    this.lastName = userMerge.lastName;
-    this.pictureId = userMerge.pictureId;
-    this.theme = userMerge.theme;
-    this.username = userMerge.username;
-    this.idUser = userMerge.idUser;
+
+    constructor(user: IUser, userIAM: IUserIAM) {
+        this.dateOfBirth = user.dateOfBirth;
+        this.description = user.description;
+        this.followers = user.followers;
+        this.follows = user.follows;
+        this.pictureId = user.pictureId;
+        this.theme = user.theme;
+
+        this.email = userIAM.email;
+        this.firstName = userIAM.firstName;
+        this.lastName = userIAM.lastName;
+        this.username = userIAM.username;
     }
 }

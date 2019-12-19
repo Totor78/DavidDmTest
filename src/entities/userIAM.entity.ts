@@ -1,10 +1,9 @@
 import {v4String} from 'uuid/interfaces';
 import {ApiModel, ApiModelProperty} from 'swagger-express-ts';
 import {Path} from 'typescript-rest';
-import {Table} from 'sequelize-typescript';
+import {IGlobalUser} from './globalUser.entity';
 
-export interface IUserIAM {
-    id: v4String;
+export interface IUserIAM extends IGlobalUser{
     username: string;
     firstName: string;
     lastName: string;
