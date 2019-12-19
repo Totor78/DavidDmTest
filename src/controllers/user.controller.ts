@@ -428,8 +428,8 @@ export class UserController implements interfaces.Controller, IUserController {
         const authorization = request.headers.authorization;
         try {
             const token = authorization !== undefined ? authorization.split(' ')[1] : '';
-            const user = await this.userIAMService.getUserByName(token, name);
-            return response.status(OK).json({user});
+            const users = await this.userIAMService.searchUsersByName(token, name);
+            return response.status(OK).json({users});
         } catch (err) {
             globalInfoLogger.error(err.message, err);
             return response.status(NOT_FOUND).json({

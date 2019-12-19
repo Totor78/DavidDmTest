@@ -4,7 +4,7 @@ import {v4String} from 'uuid/interfaces';
 
 export interface IUserIAMService {
     getUsers(token: string): Promise<any>;
-    getUserByName(token: string, name: string): Promise<any>;
+    searchUsersByName(token: string, name: string): Promise<any>;
     getUserById(token: string, id: v4String): Promise<any>;
 }
 
@@ -31,11 +31,16 @@ export class UserIAMService implements IUserIAMService {
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('UserIAM')
-    public async getUserByName(token: string, name: string): Promise<any> {
+    public async searchUsersByName(token: string, name: string): Promise<any> {
         try {
             this.kcAdminClient.setAccessToken(token);
-            return await this.kcAdminClient.users.find({
-                username: name,
+            const users = await this.kcAdminClient.users.find();
+            return users.filter((user) => {
+                if (user.username !== undefined) {
+                    return user.username.includes(name);
+                } else {
+                    return false;
+                }
             });
         } catch (e) {
             return e;
