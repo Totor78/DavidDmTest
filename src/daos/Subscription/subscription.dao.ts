@@ -1,6 +1,6 @@
 import {v4String} from 'uuid/interfaces';
 import {NameCallerArgsReturnLogDaosInfoLevel, SequelizeConnection} from '@shared';
-import {ISubscription, IUser, SubscriptionEntity} from '@entities';
+import {ISubscription, Subscription} from '@entities';
 
 export interface ISubscriptionDao {
     getAll: () => Promise<ISubscription[]>;
@@ -9,7 +9,7 @@ export interface ISubscriptionDao {
 }
 
 export class SubscriptionDao implements ISubscriptionDao {
-    private subscriptionRepository = SequelizeConnection.getInstance().getRepository(SubscriptionEntity);
+    private subscriptionRepository = SequelizeConnection.getInstance().getRepository(Subscription);
 
     @NameCallerArgsReturnLogDaosInfoLevel('Subscription')
     public async getAll(): Promise<ISubscription[]> {

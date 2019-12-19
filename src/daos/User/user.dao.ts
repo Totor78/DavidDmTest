@@ -1,9 +1,7 @@
 import {v4String} from 'uuid/interfaces';
 import {SequelizeConnection} from '@shared';
-import {IUser, UserEntity} from '@entities';
-import {UserIAMEntity} from '@entities';
-import {ISubscription, SubscriptionEntity} from '@entities';
-import IUserMerge, {UserMerge} from '../../entities/userMerge.entity';
+import {IUser, User} from '@entities';
+import {Subscription} from '@entities';
 export interface IUserDao {
     getAll: () => Promise<IUser[]>;
     getOne: (id: v4String) => Promise<IUser|null>;
@@ -15,8 +13,8 @@ export interface IUserDao {
 }
 
 export class UserDao implements IUserDao {
-    private userRepository = SequelizeConnection.getInstance().getRepository(UserEntity);
-    private subscriptionRepository = SequelizeConnection.getInstance().getRepository(SubscriptionEntity);
+    private userRepository = SequelizeConnection.getInstance().getRepository(User);
+    private subscriptionRepository = SequelizeConnection.getInstance().getRepository(Subscription);
 
     public async getAll(): Promise<IUser[]> {
         return this.userRepository.findAll();

@@ -3,10 +3,11 @@ import supertest from 'supertest';
 
 import { BAD_REQUEST, CREATED, OK } from 'http-status-codes';
 import { Response, SuperTest, Test } from 'supertest';
-import {IUserIAM, UserIAMEntity} from '@entities';
+import {IUserIAM, User, UserIAM} from '@entities';
 import { UserDao } from '@daos';
 import { pErr, paramMissingError } from '@shared';
 import {v4, v4String} from 'uuid/interfaces';
+import UserRepresentation from 'keycloak-admin/lib/defs/userRepresentation';
 
 describe('Users Routes', () => {
 
@@ -29,24 +30,24 @@ describe('Users Routes', () => {
             request was successful.`, (done) => {
 
             const users = [
-                new UserIAMEntity({
-                    id: 'c498e2aa-1c42-4827-80be-9fc6edeeaee3' as unknown as v4String,
-                    username: 'sMaxwell',
-                    firstName: 'Sean',
-                    lastName: 'Maxwell',
-                    email: 'sean.maxwell@gmail.com'}),
-                new UserIAMEntity({
-                    id: '2edcdfe3-f82b-456f-a0a2-1a49eb73a76f' as unknown as v4String,
-                    username: 'jSmith',
-                    firstName: 'John',
-                    lastName: 'Smith',
-                    email: 'john.smith@gmail.com'}),
-                new UserIAMEntity({
-                    id: 'c89df2b6-3c62-4bc1-8516-b84df54453d4' as unknown as v4String,
-                    username: 'gFreeman',
-                    firstName: 'Gordan',
-                    lastName: 'Freeman',
-                    email: 'gordan.freeman@gmail.com'}),
+                new UserIAM(
+                    'c498e2aa-1c42-4827-80be-9fc6edeeaee3' as unknown as v4String,
+                    'sMaxwell',
+                    'Sean',
+                    'Maxwell',
+                    'sean.maxwell@gmail.com'),
+                new UserIAM(
+                    '2edcdfe3-f82b-456f-a0a2-1a49eb73a76f' as unknown as v4String,
+                    'jSmith',
+                    'John',
+                    'Smith',
+                    'john.smith@gmail.com'),
+                new UserIAM(
+                    'c89df2b6-3c62-4bc1-8516-b84df54453d4' as unknown as v4String,
+                    'gFreeman',
+                    'Gordan',
+                    'Freeman',
+                    'gordan.freeman@gmail.com'),
             ];
 
             spyOn(UserDao.prototype, 'getAll').and.returnValue(Promise.resolve(users));
@@ -56,8 +57,8 @@ describe('Users Routes', () => {
                     pErr(err);
                     expect(res.status).toBe(OK);
                     // Caste instance-objects to 'UserIAMEntity' objects
-                    const retUsers = res.body.users.map((user: IUserIAM) => {
-                        return new UserIAMEntity(user);
+                    const retUsers = res.body.users.map((user: UserRepresentation) => {
+                        return UserIAM.instantiateFromUserRepresentation(user);
                     });
                     expect(retUsers).toEqual(users);
                     expect(res.body.error).toBeUndefined();

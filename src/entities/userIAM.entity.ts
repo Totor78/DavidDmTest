@@ -2,8 +2,9 @@ import {v4String} from 'uuid/interfaces';
 import {ApiModel, ApiModelProperty} from 'swagger-express-ts';
 import {Path} from 'typescript-rest';
 import {IGlobalUser} from './globalUser.entity';
+import UserRepresentation from 'keycloak-admin/lib/defs/userRepresentation';
 
-export interface IUserIAM extends IGlobalUser{
+export interface IUserIAM extends IGlobalUser {
     username: string;
     firstName: string;
     lastName: string;
@@ -15,7 +16,7 @@ export interface IUserIAM extends IGlobalUser{
     name: 'UserIAM',
 })
 @Path('UserIAM')
-export class UserIAMEntity implements IUserIAM {
+export class UserIAM implements IUserIAM {
 
     @ApiModelProperty({
         description: 'Id of a User',
@@ -53,11 +54,21 @@ export class UserIAMEntity implements IUserIAM {
     })
     public email: string;
 
-    constructor(user: IUserIAM) {
-        this.id = user.id;
-        this.username = user.username;
-        this.firstName = user.firstName;
-        this.lastName = user.lastName;
-        this.email = user.email;
+    constructor(id: v4String, username: string, firstName: string, lastName: string, email: string) {
+        this.id = id;
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+    }
+
+    public static instantiateFromUserRepresentation(userRepresentation: UserRepresentation): IUserIAM {
+        return new UserIAM(
+            userRepresentation.id as unknown as v4String,
+            userRepresentation.username as string,
+            userRepresentation.firstName as string,
+            userRepresentation.lastName as string,
+            userRepresentation.email as string,
+        );
     }
 }

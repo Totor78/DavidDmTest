@@ -4,15 +4,12 @@ import {
     Model,
     PrimaryKey,
     Length,
-    NotNull,
-    HasOne,
     Default,
-    BelongsToMany,
-    Scopes, HasMany,
+    HasMany,
 } from 'sequelize-typescript';
-import {BuildOptions, DataTypes} from 'sequelize';
+import {DataTypes} from 'sequelize';
 import {v4String} from 'uuid/interfaces';
-import {SubscriptionEntity} from './subscription.entity';
+import {Subscription, ISubscription} from './subscription.entity';
 import {ApiModel, ApiModelProperty} from 'swagger-express-ts';
 import {Path} from 'typescript-rest';
 import {IGlobalUser} from './globalUser.entity';
@@ -27,8 +24,8 @@ export interface IUser extends IGlobalUser{
     dateOfBirth: Date;
     theme: eTheme;
     pictureId: v4String;
-    followers: SubscriptionEntity[];
-    follows: SubscriptionEntity[];
+    followers: ISubscription[];
+    follows: ISubscription[];
 }
 
 @ApiModel({
@@ -37,7 +34,7 @@ export interface IUser extends IGlobalUser{
 })
 @Path('User')
 @Table({paranoid: true, tableName: 'user'})
-export class UserEntity extends Model<UserEntity> implements IUser {
+export class User extends Model<User> implements IUser {
 
     @ApiModelProperty({
         description: 'Id of a User',
@@ -87,10 +84,10 @@ export class UserEntity extends Model<UserEntity> implements IUser {
     @Column(DataTypes.UUID)
     public pictureId!: v4String;
 
-    @HasMany(() => SubscriptionEntity, 'followerId')
-    public followers!: SubscriptionEntity[];
+    @HasMany(() => Subscription, 'followerId')
+    public followers!: ISubscription[];
 
-    @HasMany(() => SubscriptionEntity, 'followedId')
-    public follows!: SubscriptionEntity[];
+    @HasMany(() => Subscription, 'followedId')
+    public follows!: ISubscription[];
 
 }

@@ -1,11 +1,12 @@
 import {KeycloakAdminClient} from 'keycloak-admin/lib/client';
 import {NameCallerArgsReturnLogServicesInfoLevel} from '@shared';
 import {v4String} from 'uuid/interfaces';
+import UserRepresentation from 'keycloak-admin/lib/defs/userRepresentation';
 
 export interface IUserIAMService {
-    getUsers(token: string): Promise<any>;
-    searchUsersByName(token: string, name: string): Promise<any>;
-    getUserById(token: string, id: v4String): Promise<any>;
+    getUsers(token: string): Promise<UserRepresentation[]>;
+    searchUsersByName(token: string, name: string): Promise<UserRepresentation[]>;
+    getUserById(token: string, id: v4String): Promise<UserRepresentation>;
 }
 
 export class UserIAMService implements IUserIAMService {
@@ -21,7 +22,7 @@ export class UserIAMService implements IUserIAMService {
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('UserIAM')
-    public async getUsers(token: string): Promise<any> {
+    public async getUsers(token: string): Promise<UserRepresentation[]> {
         try {
             this.kcAdminClient.setAccessToken(token);
             return await this.kcAdminClient.users.find();
@@ -31,7 +32,7 @@ export class UserIAMService implements IUserIAMService {
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('UserIAM')
-    public async searchUsersByName(token: string, name: string): Promise<any> {
+    public async searchUsersByName(token: string, name: string): Promise<UserRepresentation[]> {
         try {
             this.kcAdminClient.setAccessToken(token);
             const users = await this.kcAdminClient.users.find();
@@ -48,7 +49,7 @@ export class UserIAMService implements IUserIAMService {
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('UserIAM')
-    public async getUserById(token: string, id: v4String): Promise<any> {
+    public async getUserById(token: string, id: v4String): Promise<UserRepresentation> {
         try {
             this.kcAdminClient.setAccessToken(token);
             return await this.kcAdminClient.users.findOne({
