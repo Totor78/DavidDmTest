@@ -13,6 +13,8 @@ import {Subscription, ISubscription} from './subscription.entity';
 import {ApiModel, ApiModelProperty} from 'swagger-express-ts';
 import {Path} from 'typescript-rest';
 import {IGlobalUser} from './globalUser.entity';
+import UserRepresentation from 'keycloak-admin/lib/defs/userRepresentation';
+import {IUserIAM} from './userIAM.entity';
 
 export enum eTheme {
     BASIC,
@@ -89,5 +91,4 @@ export class User extends Model<User> implements IUser {
 
     @HasMany(() => Subscription, 'followedId')
     public follows!: ISubscription[];
-
 }

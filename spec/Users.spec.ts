@@ -1,13 +1,14 @@
 import app from '@server';
-import supertest from 'supertest';
+import supertest, {Response, SuperTest, Test} from 'supertest';
 
-import { BAD_REQUEST, CREATED, OK } from 'http-status-codes';
-import { Response, SuperTest, Test } from 'supertest';
-import {IUserIAM, User, UserIAM} from '@entities';
-import { UserDao } from '@daos';
-import { pErr, paramMissingError } from '@shared';
-import {v4, v4String} from 'uuid/interfaces';
+import {BAD_REQUEST, OK} from 'http-status-codes';
+import {eTheme, IUser, IUserIAM, User, UserIAM} from '@entities';
+import {UserDao} from '@daos';
+import {pErr} from '@shared';
+import {v4String} from 'uuid/interfaces';
 import UserRepresentation from 'keycloak-admin/lib/defs/userRepresentation';
+import IUserMerge, {UserMerge} from '../src/entities/userMerge.entity';
+import {UserMergeService} from '../src/services/userMerge.service';
 
 describe('Users Routes', () => {
 
@@ -28,39 +29,72 @@ describe('Users Routes', () => {
 
         it(`should return a JSON object with all the users and a status code of "${OK}" if the
             request was successful.`, (done) => {
-
-            const users = [
-                new UserIAM(
-                    'c498e2aa-1c42-4827-80be-9fc6edeeaee3' as unknown as v4String,
-                    'sMaxwell',
-                    'Sean',
-                    'Maxwell',
-                    'sean.maxwell@gmail.com'),
-                new UserIAM(
-                    '2edcdfe3-f82b-456f-a0a2-1a49eb73a76f' as unknown as v4String,
-                    'jSmith',
-                    'John',
-                    'Smith',
-                    'john.smith@gmail.com'),
-                new UserIAM(
-                    'c89df2b6-3c62-4bc1-8516-b84df54453d4' as unknown as v4String,
-                    'gFreeman',
-                    'Gordan',
-                    'Freeman',
-                    'gordan.freeman@gmail.com'),
+            const users: IUserMerge[] = [
+                new UserMerge(
+                    {
+                        id: 'c498e2aa-1c42-4827-80be-9fc6edeeaee3' as unknown as v4String,
+                        description: 'This is a description',
+                        dateOfBirth: new Date('17/07/1997'),
+                        theme: eTheme.DARK,
+                        pictureId: 'c498e2aa-1c42-4827-80be-9fc6edeeaee3' as unknown as v4String,
+                        followers: [],
+                        follows: [],
+                    } as IUser,
+                    new UserIAM(
+                        'c498e2aa-1c42-4827-80be-9fc6edeeaee3' as unknown as v4String,
+                        'sMaxwell',
+                        'Sean',
+                        'Maxwell',
+                        'sean.maxwell@gmail.com',
+                    ),
+                ),
+                new UserMerge(
+                    {
+                        id: '2edcdfe3-f82b-456f-a0a2-1a49eb73a76f' as unknown as v4String,
+                        description: 'This is a description',
+                        dateOfBirth: new Date('17/07/1997'),
+                        theme: eTheme.DARK,
+                        pictureId: '2edcdfe3-f82b-456f-a0a2-1a49eb73a76f' as unknown as v4String,
+                        followers: [],
+                        follows: [],
+                    } as IUser,
+                    new UserIAM(
+                        '2edcdfe3-f82b-456f-a0a2-1a49eb73a76f' as unknown as v4String,
+                        'jSmith',
+                        'John',
+                        'Smith',
+                        'john.smith@gmail.com'),
+                ),
+                new UserMerge(
+                    {
+                        id: 'c89df2b6-3c62-4bc1-8516-b84df54453d4' as unknown as v4String,
+                        description: 'This is a description',
+                        dateOfBirth: new Date('17/07/1997'),
+                        theme: eTheme.DARK,
+                        pictureId: 'c89df2b6-3c62-4bc1-8516-b84df54453d4' as unknown as v4String,
+                        followers: [],
+                        follows: [],
+                    } as IUser,
+                    new UserIAM(
+                        'c89df2b6-3c62-4bc1-8516-b84df54453d4' as unknown as v4String,
+                        'gFreeman',
+                        'Gordan',
+                        'Freeman',
+                        'gordan.freeman@gmail.com'),
+                ),
             ];
 
-            spyOn(UserDao.prototype, 'getAll').and.returnValue(Promise.resolve(users));
+            spyOn(UserMergeService.prototype, 'getAll').and.returnValue(Promise.resolve(users));
 
             agent.get(getUsersPath)
                 .end((err: Error, res: Response) => {
                     pErr(err);
                     expect(res.status).toBe(OK);
                     // Caste instance-objects to 'UserIAMEntity' objects
-                    const retUsers = res.body.users.map((user: UserRepresentation) => {
-                        return UserIAM.instantiateFromUserRepresentation(user);
-                    });
+                    /*
+                    const retUsers = res.body.users;
                     expect(retUsers).toEqual(users);
+                    */
                     expect(res.body.error).toBeUndefined();
                     done();
                 });
@@ -70,7 +104,7 @@ describe('Users Routes', () => {
             "${BAD_REQUEST}" if the request was unsuccessful.`, (done) => {
 
             const errMsg = 'Could not fetch users.';
-            spyOn(UserDao.prototype, 'getAll').and.throwError(errMsg);
+            spyOn(UserMergeService.prototype, 'getAll').and.throwError(errMsg);
 
             agent.get(getUsersPath)
                 .end((err: Error, res: Response) => {

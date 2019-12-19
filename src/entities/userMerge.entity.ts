@@ -1,4 +1,4 @@
-import {IUser, eTheme} from './user.entity';
+import {IUser, eTheme, User} from './user.entity';
 import {IUserIAM} from './userIAM.entity';
 import {v4String} from 'uuid/interfaces';
 import {ISubscription} from './subscription.entity';
@@ -97,6 +97,8 @@ export class UserMerge implements IUserMerge {
     public follows!: ISubscription[];
 
     constructor(user: IUser, userIAM: IUserIAM) {
+        this.id = userIAM.id;
+
         this.dateOfBirth = user.dateOfBirth;
         this.description = user.description;
         this.followers = user.followers;
