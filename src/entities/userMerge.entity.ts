@@ -2,22 +2,99 @@ import {IUser, eTheme} from './user.entity';
 import {IUserIAM} from './userIAM.entity';
 import {v4String} from 'uuid/interfaces';
 import {ISubscription} from './subscription.entity';
+import {ApiModel, ApiModelProperty} from 'swagger-express-ts';
+import {Path} from 'typescript-rest';
+import {Column, Default, Length, PrimaryKey} from 'sequelize-typescript';
+import {DataTypes} from 'sequelize';
 
 export default interface IUserMerge extends IUserIAM, IUser {
 }
 
+@ApiModel({
+    description: 'UserMerge Model',
+    name: 'UserMerge',
+})
+@Path('UserMerge')
 export class UserMerge implements IUserMerge {
-    public dateOfBirth!: Date;
+
+    @ApiModelProperty({
+        description: 'Id of a User',
+        type: 'v4String',
+        required: true,
+        example: ['75442486-0878-440c-9db1-a7006c25a39f'],
+    })
+    @PrimaryKey
+    @Default(DataTypes.UUIDV4)
+    @Column(DataTypes.UUID)
+    public id!: v4String;
+
+    @ApiModelProperty({
+        description: 'username of a User',
+        required: true,
+        example: ['rocky'],
+    })
+    public username: string;
+
+    @ApiModelProperty({
+        description: 'firstName of a User',
+        required: true,
+        example: ['dupond'],
+    })
+    public firstName: string;
+
+    @ApiModelProperty({
+        description: 'lastName of a User',
+        required: true,
+        example: ['dupont'],
+    })
+    public lastName: string;
+
+    @ApiModelProperty({
+        description: 'email of a User',
+        required: true,
+        example: ['test@mail.io'],
+    })
+    public email: string;
+
+    @ApiModelProperty({
+        description: 'Description of a user',
+        required: true,
+        example: ['This is a User'],
+    })
+    @Length({max: 144})
+    @Column(DataTypes.STRING)
     public description!: string;
-    public email!: string;
-    public firstName!: string;
+
+    @ApiModelProperty({
+        description: 'date of birth of a user',
+        required: true,
+        example: ['This is a User'],
+    })
+    @Column(DataTypes.DATE)
+    public dateOfBirth!: Date;
+
+    @ApiModelProperty({
+        description: 'Theme',
+        required: true,
+        example: ['DARK'],
+    })
+    @Column(
+        DataTypes.ENUM({
+            values: ['BASIC', 'DARK'],
+        }),
+    )
+    public theme!: eTheme;
+
+    @ApiModelProperty({
+        description: 'pictureId',
+        required: true,
+        example: ['75442486-0878-440c-9db1-a7006c25a39f'],
+    })
+    @Column(DataTypes.UUID)
+    public pictureId!: v4String;
+
     public followers!: ISubscription[];
     public follows!: ISubscription[];
-    public id!: v4String;
-    public lastName!: string;
-    public pictureId!: v4String;
-    public theme!: eTheme;
-    public username!: string;
 
     constructor(user: IUser, userIAM: IUserIAM) {
         this.dateOfBirth = user.dateOfBirth;

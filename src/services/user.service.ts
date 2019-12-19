@@ -3,13 +3,10 @@ import {v4String} from 'uuid/interfaces';
 import {UserDao} from '@daos';
 import {NameCallerArgsReturnLogServicesInfoLevel} from '@shared';
 import {IUserDao} from '../daos/User/user.dao';
-import {UserIAMService} from './userIAM.service';
-import IUserMerge, {UserMerge} from '../entities/userMerge.entity';
-import {ancestorWhere} from 'tslint';
 
 export interface IUserService {
     getAll: () => Promise<IUser[]>;
-    getUserById: (id: v4String, authorization: any) => Promise<IUserMerge|undefined>;
+    getUserById: (id: v4String, authorization: any) => Promise<IUser|null>;
     getFollowersOfUser: (id: v4String) => Promise<IUser[]>;
     getFollowsOfUser: (id: v4String) => Promise<IUser[]>;
     add: (user: IUser) => Promise<any>;
@@ -20,7 +17,6 @@ export interface IUserService {
 export class UserService implements IUserService {
 
     private userDao: IUserDao = new UserDao();
-    private userIAMService = new UserIAMService();
 
     @NameCallerArgsReturnLogServicesInfoLevel('User')
     public async add(user: IUser): Promise<any> {
@@ -38,15 +34,8 @@ export class UserService implements IUserService {
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('User')
-    public async getUserById(id: v4String, authorization: any): Promise<IUserMerge|undefined> {
-        const token: string = authorization !== undefined ? authorization.split(' ')[1] : '';
-        const userIAM: IUserIAM = UserIAM.instantiateFromUserRepresentation(
-            await this.userIAMService.getUserById(token, id),
-        );
-        const user: IUser|null = await this.userDao.getOne(id);
-        if (user !== null) {
-            return new UserMerge(user, userIAM);
-        }
+    public async getUserById(id: v4String, authorization: any): Promise<IUser|null> {
+        return await this.userDao.getOne(id);
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('User')

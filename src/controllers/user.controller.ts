@@ -15,6 +15,7 @@ import {KeycloakMiddleware} from '../shared/Keycloak';
 import {idMatch} from '../shared/Utils';
 import {IUserService, UserService} from '../services/user.service';
 import {IUser} from '@entities';
+import {IUserMergeService, UserMergeService} from '../services/userMerge.service';
 
 interface IUserController {
     getAll: (
@@ -78,6 +79,7 @@ export class UserController implements interfaces.Controller, IUserController {
 
     private userIAMService: IUserIAMService = new UserIAMService();
     private userService: IUserService = new UserService();
+    private userMergeService: IUserMergeService = new UserMergeService();
 
     public static TARGET_NAME = 'userController';
 
@@ -178,7 +180,7 @@ export class UserController implements interfaces.Controller, IUserController {
             200: {
                 description: 'Success',
                 type: SwaggerDefinitionConstant.Response.Type.ARRAY,
-                model: 'User',
+                model: 'UserMerge',
             },
             400: {
                 description: 'Bad request',
@@ -191,7 +193,7 @@ export class UserController implements interfaces.Controller, IUserController {
         next: express.NextFunction,
     ): Promise<express.Response> {
         try {
-            const users = await this.userService.getAll();
+            const users = await this.userMergeService.getAll(request.headers.authorization as string);
             return response.status(OK).json({users});
         } catch (err) {
             globalInfoLogger.error(err.message, err);
