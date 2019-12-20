@@ -6,7 +6,7 @@ import {IUser} from '../../entities/user.entity';
 import {ISubscription} from '@entities';
 
 export class SubscriptionDao extends MockDaoMock implements ISubscriptionDao {
-    public async add(subscription: ISubscription): Promise<any> {
+    public async add(followerId: v4String, followedId: v4String): Promise<any> {
         return null as any;
     }
     public async delete(followerId: v4String, followedId: v4String): Promise<void> {
