@@ -24,17 +24,18 @@ export class UserMergeService implements IUserMergeService {
 
     private getUsersMergeFromUsersAndUsersIAM(users: IUser[], usersIAM: IUserIAM[]): IUserMerge[] {
         const usersMerge: IUserMerge[] = [];
-        if (users.length === 0 || usersIAM.length === 0) {
-            return usersMerge;
-        }
-        users.forEach((user: IUser) => {
-            usersIAM.forEach((userIAM: IUserIAM) => {
-                if (user.id === userIAM.id) {
-                    usersMerge.push(new UserMerge(user, userIAM));
+        for (const usersIAMElement of usersIAM) {
+            let isIn: boolean = false;
+            for (const user of users) {
+                if (user.id === usersIAMElement.id) {
+                    isIn = true;
+                    usersMerge.push(new UserMerge(user, usersIAMElement));
                 }
-            });
-        });
-
+            }
+            if (!isIn) {
+                usersMerge.push(new UserMerge({id: usersIAMElement.id} as IUser, usersIAMElement));
+            }
+        }
         return usersMerge;
     }
 }
