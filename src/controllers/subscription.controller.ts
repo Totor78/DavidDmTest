@@ -50,16 +50,20 @@ export class SubscriptionController implements interfaces.Controller, ISubscript
 
     public static TARGET_NAME = 'subscriptionController';
 
-    @httpPost('')
+    @httpPost('/:id')
     @NameCallerArgsReturnLogControllersInfoLevel('Subscription')
     @ApiOperationPost({
         description: 'Add a subscription',
         summary: 'Add a new subscription',
+        path: '/{id}',
         parameters: {
-            body: {
-                description: 'Subscription to add',
-                required: true,
-                model: 'Subscription',
+            path: {
+                id: {
+                    description: 'id of a user',
+                    type: SwaggerDefinitionConstant.Parameter.Type.STRING,
+                    format: 'uuidv4',
+                    required: true,
+                },
             },
         },
         responses: {
@@ -76,14 +80,24 @@ export class SubscriptionController implements interfaces.Controller, ISubscript
         response: express.Response,
         next: express.NextFunction,
     ): Promise<any> {
+        const { id } = request.params;
+        if (!idMatch(id)) {
+            return response.status(BAD_REQUEST).json({
+                error: 'id must be uuid',
+            });
+        }
+        const authorization = request.headers.authorization;
+        const token = authorization !== undefined ? jwt_decode(authorization.split(' ')[1]) : '';
+        // @ts-ignore
+        const followerId = token.sub;
         try {
-            const subscription = request.body;
-            await this.subscriptionService.add(subscription);
-            return response.status(CREATED);
+            await this.subscriptionService.add(followerId as unknown as v4String, id as unknown as v4String);
+            return response.status(CREATED).json();
         } catch (e) {
             globalInfoLogger.error(e.message, e);
             return response.status(BAD_REQUEST).json({
-                error: e.message,
+                message: e.message,
+                stack: e.stack,
             });
         }
     }

@@ -29,6 +29,7 @@
     "i": "^0.3.6",
     "inversify": "^5.0.1",
     "inversify-express-utils": "^6.3.2",
+    "json-ignore": "^0.4.0",
     "jwt-decode": "^2.2.0",
     "kaop-ts": "^4.3.0",
     "keycloak-admin": "^1.13.0",

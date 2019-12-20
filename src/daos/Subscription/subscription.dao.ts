@@ -4,7 +4,7 @@ import {ISubscription, Subscription} from '@entities';
 
 export interface ISubscriptionDao {
     getAll: () => Promise<ISubscription[]>;
-    add: (subscription: ISubscription) => Promise<any>;
+    add: (followerId: v4String, followedId: v4String) => Promise<any>;
     delete: (followerId: v4String, followedId: v4String) => Promise<void>;
 }
 
@@ -17,8 +17,11 @@ export class SubscriptionDao implements ISubscriptionDao {
     }
 
     @NameCallerArgsReturnLogDaosInfoLevel('Subscription')
-    public async add(subscription: ISubscription): Promise<any> {
-        return this.subscriptionRepository.create(subscription);
+    public async add(followerId: v4String, followedId: v4String): Promise<any> {
+        return this.subscriptionRepository.create({
+            followerId,
+            followedId,
+        });
     }
 
     /**
