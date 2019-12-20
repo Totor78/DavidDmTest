@@ -24,11 +24,13 @@ export class UserIAMService implements IUserIAMService {
         try {
             const users = await KeycloakAdminClientService.getInstance().users.find();
             return users.filter((user) => {
-                if (user.username !== undefined) {
-                    return user.username.includes(name);
-                } else {
-                    return false;
-                }
+                let contains;
+                contains = user.username !== undefined && user.username.toLowerCase().includes(name.toLowerCase());
+                if (contains) { return true; }
+                contains = user.firstName !== undefined && user.firstName.toLowerCase().includes(name.toLowerCase());
+                if (contains) { return true; }
+                contains = user.lastName !== undefined && user.lastName.toLowerCase().includes(name.toLowerCase());
+                return contains;
             }) as unknown as IUserIAM[];
         } catch (e) {
             return e;

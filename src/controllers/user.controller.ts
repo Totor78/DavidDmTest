@@ -16,6 +16,7 @@ import {idMatch} from '../shared/Utils';
 import {IUserService, UserService} from '../services/user.service';
 import {IUser} from '@entities';
 import {IUserMergeService, UserMergeService} from '../services/userMerge.service';
+import jwt_decode from 'jwt-decode';
 
 interface IUserController {
     getAll: (
@@ -24,6 +25,16 @@ interface IUserController {
         next: express.NextFunction,
     ) => Promise<express.Response>;
     getUserById: (
+        request: express.Request,
+        response: express.Response,
+        next: express.NextFunction,
+    ) => Promise<express.Response>;
+    getFollowers: (
+        request: express.Request,
+        response: express.Response,
+        next: express.NextFunction,
+    ) => Promise<express.Response>;
+    getFollows: (
         request: express.Request,
         response: express.Response,
         next: express.NextFunction,
@@ -290,6 +301,39 @@ export class UserController implements interfaces.Controller, IUserController {
         }
     }
 
+    @httpGet('/followers')
+    @NameCallerArgsReturnLogControllersInfoLevel('User')
+    @ApiOperationGet({
+        description: 'Get followers of connected user',
+        summary: 'Get all followers of the connected user',
+        path: '/followers',
+        responses: {
+            200: {
+                description: 'Success',
+                type: SwaggerDefinitionConstant.Response.Type.ARRAY,
+                model: 'User',
+            },
+            404: {
+                description: 'User not found',
+            },
+        },
+    })
+    public async getFollowers(
+        request: express.Request,
+        response: express.Response,
+        next: express.NextFunction,
+    ): Promise<express.Response> {
+        try {
+            const followers = await this.userMergeService.getFollowersOfUser(request.headers.authorization as string);
+            return response.status(OK).json({followers});
+        } catch (err) {
+            globalInfoLogger.error(err.message, err);
+            return response.status(NOT_FOUND).json({
+                error: err.message,
+            });
+        }
+    }
+
     @httpGet('/follows/:id')
     @NameCallerArgsReturnLogControllersInfoLevel('User')
     @ApiOperationGet({
@@ -333,6 +377,39 @@ export class UserController implements interfaces.Controller, IUserController {
         }
         try {
             const follows = await this.userService.getFollowsOfUser(id as unknown as v4String);
+            return response.status(OK).json({follows});
+        } catch (err) {
+            globalInfoLogger.error(err.message, err);
+            return response.status(NOT_FOUND).json({
+                error: err.message,
+            });
+        }
+    }
+
+    @httpGet('/follows')
+    @NameCallerArgsReturnLogControllersInfoLevel('User')
+    @ApiOperationGet({
+        description: 'Get follows of connected user',
+        summary: 'Get all follows of the connected user',
+        path: '/follows',
+        responses: {
+            200: {
+                description: 'Success',
+                type: SwaggerDefinitionConstant.Response.Type.ARRAY,
+                model: 'User',
+            },
+            404: {
+                description: 'User not found',
+            },
+        },
+    })
+    public async getFollows(
+        request: express.Request,
+        response: express.Response,
+        next: express.NextFunction,
+    ): Promise<express.Response> {
+        try {
+            const follows = await this.userMergeService.getFollowsOfUser(request.headers.authorization as string);
             return response.status(OK).json({follows});
         } catch (err) {
             globalInfoLogger.error(err.message, err);
@@ -428,8 +505,7 @@ export class UserController implements interfaces.Controller, IUserController {
         const {name} = request.params;
         const authorization = request.headers.authorization;
         try {
-            const token = authorization !== undefined ? authorization.split(' ')[1] : '';
-            const users = await this.userIAMService.searchUsersByName(token, name);
+            const users = await this.userMergeService.searchUsersByName(request.headers.authorization as string, name);
             return response.status(OK).json({users});
         } catch (err) {
             globalInfoLogger.error(err.message, err);

@@ -30,10 +30,13 @@ export class UserDao implements IUserDao {
      * @param id
      */
     public async getFollowersOfUser(id: v4String): Promise<any> {
-         return this.userRepository.findByPk(id.toString(), {
+         return this.userRepository.findAll({
             include: [{
                 model: this.subscriptionRepository,
                 as: 'followers',
+                where: {
+                    followedId: id.toString(),
+                },
             }],
         });
     }
@@ -41,10 +44,13 @@ export class UserDao implements IUserDao {
      * @param id
      */
     public async getFollowsOfUser(id: v4String): Promise<any> {
-        return this.userRepository.findByPk(id.toString(), {
+        return this.userRepository.findAll({
             include: [{
                 model: this.subscriptionRepository,
                 as: 'follows',
+                where: {
+                    followerId: id.toString(),
+                },
             }],
         });
     }
