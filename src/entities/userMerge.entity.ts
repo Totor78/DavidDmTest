@@ -1,5 +1,5 @@
 import {IUser, eTheme, User} from './user.entity';
-import {IUserIAM} from './userIAM.entity';
+import {IUserIAM, UserIAM} from './userIAM.entity';
 import {v4String} from 'uuid/interfaces';
 import {ISubscription} from './subscription.entity';
 import {ApiModel, ApiModelProperty} from 'swagger-express-ts';
@@ -99,7 +99,7 @@ export class UserMerge implements IUserMerge {
     constructor(user: IUser, userIAM: IUserIAM) {
         this.id = userIAM.id;
 
-        this.dateOfBirth = user.dateOfBirth;
+        this.dateOfBirth = new Date(user.dateOfBirth);
         this.description = user.description;
         this.followers = user.followers;
         this.follows = user.follows;
@@ -111,4 +111,26 @@ export class UserMerge implements IUserMerge {
         this.lastName = userIAM.lastName;
         this.username = userIAM.username;
     }
+
+    public static instantiateFromUserMerge(userMerge: IUserMerge) {
+        return new UserMerge(
+            {
+                id: userMerge.id,
+                description: userMerge.description,
+                dateOfBirth: new Date(userMerge.dateOfBirth),
+                followers: userMerge.followers,
+                follows: userMerge.follows,
+                pictureId: userMerge.pictureId,
+                theme: userMerge.theme,
+            } as IUser,
+            new UserIAM(
+                userMerge.id,
+                userMerge.username,
+                userMerge.firstName,
+                userMerge.lastName,
+                userMerge.email,
+            ),
+        );
+    }
+
 }

@@ -34,7 +34,7 @@ describe('Users Routes', () => {
                     {
                         id: 'c498e2aa-1c42-4827-80be-9fc6edeeaee3' as unknown as v4String,
                         description: 'This is a description',
-                        dateOfBirth: new Date('17/07/1997'),
+                        dateOfBirth: new Date('1997-07-17'),
                         theme: eTheme.DARK,
                         pictureId: 'c498e2aa-1c42-4827-80be-9fc6edeeaee3' as unknown as v4String,
                         followers: [],
@@ -52,7 +52,7 @@ describe('Users Routes', () => {
                     {
                         id: '2edcdfe3-f82b-456f-a0a2-1a49eb73a76f' as unknown as v4String,
                         description: 'This is a description',
-                        dateOfBirth: new Date('17/07/1997'),
+                        dateOfBirth: new Date('1997-07-17'),
                         theme: eTheme.DARK,
                         pictureId: '2edcdfe3-f82b-456f-a0a2-1a49eb73a76f' as unknown as v4String,
                         followers: [],
@@ -69,7 +69,7 @@ describe('Users Routes', () => {
                     {
                         id: 'c89df2b6-3c62-4bc1-8516-b84df54453d4' as unknown as v4String,
                         description: 'This is a description',
-                        dateOfBirth: new Date('17/07/1997'),
+                        dateOfBirth: new Date('1997-07-17'),
                         theme: eTheme.DARK,
                         pictureId: 'c89df2b6-3c62-4bc1-8516-b84df54453d4' as unknown as v4String,
                         followers: [],
@@ -90,11 +90,9 @@ describe('Users Routes', () => {
                 .end((err: Error, res: Response) => {
                     pErr(err);
                     expect(res.status).toBe(OK);
-                    // Caste instance-objects to 'UserIAMEntity' objects
-                    /*
-                    const retUsers = res.body.users;
+                    // Caste instance-objects to 'UserIAMEntity' object
+                    const retUsers = res.body.users.map((user: any) => UserMerge.instantiateFromUserMerge(user));
                     expect(retUsers).toEqual(users);
-                    */
                     expect(res.body.error).toBeUndefined();
                     done();
                 });
