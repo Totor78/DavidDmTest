@@ -45,7 +45,6 @@ export class User extends Model<User> implements IUser {
         example: ['75442486-0878-440c-9db1-a7006c25a39f'],
     })
     @PrimaryKey
-    @Default(DataTypes.UUIDV4)
     @Column(DataTypes.UUID)
     public id!: v4String;
 

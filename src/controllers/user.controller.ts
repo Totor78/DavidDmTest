@@ -12,11 +12,12 @@ import * as express from 'express';
 import {ACCEPTED, BAD_REQUEST, CREATED, NO_CONTENT, NOT_FOUND, OK} from 'http-status-codes';
 import {globalInfoLogger, NameCallerArgsReturnLogControllersInfoLevel} from '@shared';
 import {KeycloakMiddleware} from '../shared/Keycloak';
-import {idMatch} from '../shared/Utils';
+import {getIdFromAuthorization, idMatch} from '../shared/Utils';
 import {IUserService, UserService} from '../services/user.service';
 import {IUser} from '@entities';
 import {IUserMergeService, UserMergeService} from '../services/userMerge.service';
 import jwt_decode from 'jwt-decode';
+import {find} from 'tslint/lib/utils';
 
 interface IUserController {
     getAll: (
@@ -59,11 +60,6 @@ interface IUserController {
         response: express.Response,
         next: express.NextFunction,
     ) => Promise<express.Response>;
-    add: (
-        request: express.Request,
-        response: express.Response,
-        next: express.NextFunction,
-    ) => Promise<any>;
     update: (
         request: express.Request,
         response: express.Response,
@@ -93,44 +89,6 @@ export class UserController implements interfaces.Controller, IUserController {
     private userMergeService: IUserMergeService = new UserMergeService();
 
     public static TARGET_NAME = 'userController';
-
-    @httpPost('')
-    @NameCallerArgsReturnLogControllersInfoLevel('User')
-    @ApiOperationPost({
-        description: 'Add a user',
-        summary: 'Add a new user',
-        parameters: {
-            body: {
-                description: 'User to add',
-                required: true,
-                model: 'User',
-            },
-        },
-        responses: {
-            201: {
-                description: 'Created',
-            },
-            400: {
-                description: 'User malformed',
-            },
-        },
-    })
-    public async add(
-        request: express.Request,
-        response: express.Response,
-        next: express.NextFunction,
-    ): Promise<any> {
-        try {
-            const user = request.body;
-            await this.userService.add(user);
-            return response.status(CREATED);
-        } catch (e) {
-            globalInfoLogger.error(e.message, e);
-            return response.status(BAD_REQUEST).json({
-                error: e.message,
-            });
-        }
-    }
 
     @httpDelete('/:id')
     @NameCallerArgsReturnLogControllersInfoLevel('User')
@@ -503,7 +461,6 @@ export class UserController implements interfaces.Controller, IUserController {
         next: express.NextFunction,
     ): Promise<express.Response> {
         const {name} = request.params;
-        const authorization = request.headers.authorization;
         try {
             const users = await this.userMergeService.searchUsersByName(request.headers.authorization as string, name);
             return response.status(OK).json({users});
@@ -519,7 +476,7 @@ export class UserController implements interfaces.Controller, IUserController {
     @NameCallerArgsReturnLogControllersInfoLevel('User')
     @ApiOperationPut({
         description: 'Edit a user',
-        summary: 'Update an existing user',
+        summary: 'Update if user exists else create one',
         parameters: {
             body: {
                 description: 'User to update',
@@ -528,6 +485,9 @@ export class UserController implements interfaces.Controller, IUserController {
             },
         },
         responses: {
+            201: {
+                description: 'Created',
+            },
             204: {
                 description: 'Updated',
             },
@@ -542,12 +502,37 @@ export class UserController implements interfaces.Controller, IUserController {
         next: express.NextFunction,
     ): Promise<express.Response> {
         request.connection.setTimeout(Number(process.env.TIMEOUT) || 10000);
+        console.log(request.body);
+        const user: IUser = request.body as unknown as IUser;
+        const id: v4String = getIdFromAuthorization(request.headers.authorization as unknown as string);
+        user.id = id;
+        console.log(user);
         try {
-            await this.userService.update(request.params as unknown as IUser);
-            return response.status(NO_CONTENT);
+            const findedUser: IUser | null = await this.userService.getUserById(id);
+            if (findedUser !== null) {
+                try {
+                    await this.userService.update(user);
+                    return response.status(NO_CONTENT).json();
+                } catch (err) {
+                    globalInfoLogger.error(err.message, err);
+                    return response.status(BAD_REQUEST).json({
+                        error: err.message,
+                    });
+                }
+            } else {
+                try {
+                    await this.userService.add(user);
+                    return response.status(CREATED).json();
+                } catch (err) {
+                    globalInfoLogger.error(err.message, err);
+                    return response.status(BAD_REQUEST).json({
+                        error: err.message,
+                    });
+                }
+            }
         } catch (err) {
             globalInfoLogger.error(err.message, err);
-            return response.status(BAD_REQUEST).json({
+            return response.status(NOT_FOUND).json({
                 error: err.message,
             });
         }

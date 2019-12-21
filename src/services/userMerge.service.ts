@@ -4,6 +4,7 @@ import {IUserIAMService, UserIAMService} from './userIAM.service';
 import {IUser, IUserIAM, UserIAM} from '@entities';
 import {NameCallerArgsReturnLogServicesInfoLevel} from '@shared';
 import jwt_decode from 'jwt-decode';
+import {getIdFromAuthorization} from '../shared/Utils';
 
 export interface IUserMergeService {
     getAll(authorization: string): Promise<IUserMerge[]>;
@@ -38,9 +39,7 @@ export class UserMergeService implements IUserMergeService {
     @NameCallerArgsReturnLogServicesInfoLevel('UserMerge')
     public async getFollowsOfUser(authorization: string): Promise<IUserMerge[]> {
         const token = authorization.split(' ')[1];
-        const decodedToken = jwt_decode(token);
-        // @ts-ignore
-        const id = decodedToken.sub;
+        const id = getIdFromAuthorization(authorization);
         return UserMergeService.getUsersMergeFromUsersAndUsersIAM(
             await this.userService.getFollowsOfUser(id),
             await this.userIAMService.getUsers(token),
@@ -51,9 +50,7 @@ export class UserMergeService implements IUserMergeService {
     @NameCallerArgsReturnLogServicesInfoLevel('UserMerge')
     public async getFollowersOfUser(authorization: string): Promise<IUserMerge[]> {
         const token = authorization.split(' ')[1];
-        const decodedToken = jwt_decode(token);
-        // @ts-ignore
-        const id = decodedToken.sub;
+        const id = getIdFromAuthorization(authorization);
         return UserMergeService.getUsersMergeFromUsersAndUsersIAM(
             await this.userService.getFollowersOfUser(id),
             await this.userIAMService.getUsers(token),
