@@ -502,11 +502,9 @@ export class UserController implements interfaces.Controller, IUserController {
         next: express.NextFunction,
     ): Promise<express.Response> {
         request.connection.setTimeout(Number(process.env.TIMEOUT) || 10000);
-        console.log(request.body);
         const user: IUser = request.body as unknown as IUser;
         const id: v4String = getIdFromAuthorization(request.headers.authorization as unknown as string);
         user.id = id;
-        console.log(user);
         try {
             const findedUser: IUser | null = await this.userService.getUserById(id);
             if (findedUser !== null) {
