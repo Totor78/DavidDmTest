@@ -13,7 +13,7 @@ import {globalInfoLogger} from '@shared';
 const server = new InversifyExpressServer(container);
 server.setConfig((appConfig: any) => {
     appConfig.use( bodyParser.json() );
-    const allowedOrigins = ['http://localhost:3001/', 'http://localhost:3000/', 'http://erzo.wtf/'];
+    const allowedOrigins = ['http://localhost:3001', 'http://localhost:3000', 'http://erzo.wtf'];
     appConfig.use(cors({
         origin: allowedOrigins,
         credentials: true,
