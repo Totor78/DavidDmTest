@@ -133,4 +133,14 @@ export class UserMerge implements IUserMerge {
         );
     }
 
+    public getUserIam(): IUserIAM {
+        return new UserIAM(
+            this.id,
+            this.username,
+            this.firstName,
+            this.lastName,
+            this.email,
+        );
+    }
+
 }

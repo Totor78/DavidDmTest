@@ -71,4 +71,14 @@ export class UserIAM implements IUserIAM {
             userRepresentation.email as string,
         );
     }
+
+    public static getUserRepresentationFromUserIAM(userIAM: IUserIAM): UserRepresentation {
+        return {
+            id: userIAM.id.toString(),
+            email: userIAM.email,
+            firstName: userIAM.firstName,
+            lastName: userIAM.lastName,
+            username: userIAM.username,
+        } as UserRepresentation;
+    }
 }
