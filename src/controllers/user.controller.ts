@@ -18,6 +18,8 @@ import {IUser} from '@entities';
 import {IUserMergeService, UserMergeService} from '../services/userMerge.service';
 import jwt_decode from 'jwt-decode';
 import {find} from 'tslint/lib/utils';
+import UserRepresentation from 'keycloak-admin/lib/defs/userRepresentation';
+import IUserMerge from '../entities/userMerge.entity';
 
 interface IUserController {
     getAll: (
@@ -162,7 +164,7 @@ export class UserController implements interfaces.Controller, IUserController {
         next: express.NextFunction,
     ): Promise<express.Response> {
         try {
-            const users = await this.userMergeService.getAll(request.headers.authorization as string);
+            const users = await this.userMergeService.getAll();
             return response.status(OK).json({users});
         } catch (err) {
             globalInfoLogger.error(err.message, err);
@@ -194,10 +196,8 @@ export class UserController implements interfaces.Controller, IUserController {
         response: express.Response,
         next: express.NextFunction,
     ): Promise<express.Response> {
-        const authorization = request.headers.authorization;
         try {
-            const token = authorization !== undefined ? authorization.split(' ')[1] : '';
-            const keycloakUsers = await this.userIAMService.getUsers(token);
+            const keycloakUsers = await this.userIAMService.getUsers();
             return response.status(OK).json({keycloakUsers});
         } catch (e) {
             globalInfoLogger.error(e.message, e);
@@ -462,7 +462,7 @@ export class UserController implements interfaces.Controller, IUserController {
     ): Promise<express.Response> {
         const {name} = request.params;
         try {
-            const users = await this.userMergeService.searchUsersByName(request.headers.authorization as string, name);
+            const users = await this.userMergeService.searchUsersByName(name);
             return response.status(OK).json({users});
         } catch (err) {
             globalInfoLogger.error(err.message, err);
@@ -481,7 +481,7 @@ export class UserController implements interfaces.Controller, IUserController {
             body: {
                 description: 'User to update',
                 required: true,
-                model: 'User',
+                model: 'UserMerge',
             },
         },
         responses: {
@@ -502,9 +502,21 @@ export class UserController implements interfaces.Controller, IUserController {
         next: express.NextFunction,
     ): Promise<express.Response> {
         request.connection.setTimeout(Number(process.env.TIMEOUT) || 10000);
-        const user: IUser = request.body as unknown as IUser;
+        const user: IUserMerge = request.body as unknown as IUserMerge;
         const id: v4String = getIdFromAuthorization(request.headers.authorization as unknown as string);
         user.id = id;
+        try {
+            const userRepresentation: UserRepresentation = await this.userIAMService.getUserRepresentationById(id);
+            userRepresentation.username = user.username;
+            userRepresentation.firstName = user.firstName;
+            userRepresentation.lastName = user.lastName;
+            userRepresentation.email = user.email;
+            await this.userIAMService.updateUserRepresentation(userRepresentation);
+        } catch (err) {
+            return response.status(BAD_REQUEST).json({
+                error: err.message,
+            });
+        }
         try {
             const findedUser: IUser | null = await this.userService.getUserById(id);
             if (findedUser !== null) {
