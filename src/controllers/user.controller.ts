@@ -494,6 +494,12 @@ export class UserController implements interfaces.Controller, IUserController {
             400: {
                 description: 'User malformed',
             },
+            404: {
+                description: 'User not found',
+            },
+            409: {
+                description: 'Conflict : user with this email already exists',
+            },
         },
     })
     public async update(
