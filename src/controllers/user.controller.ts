@@ -9,7 +9,7 @@ import {controller, httpDelete, httpGet, httpPost, httpPut, interfaces} from 'in
 import {v4String} from 'uuid/interfaces';
 import {IUserIAMService, UserIAMService} from '../services/userIAM.service';
 import * as express from 'express';
-import {ACCEPTED, BAD_REQUEST, CREATED, NO_CONTENT, NOT_FOUND, OK} from 'http-status-codes';
+import {ACCEPTED, BAD_REQUEST, CONFLICT, CREATED, NO_CONTENT, NOT_FOUND, OK} from 'http-status-codes';
 import {globalInfoLogger, NameCallerArgsReturnLogControllersInfoLevel} from '@shared';
 import {KeycloakMiddleware} from '../shared/Keycloak';
 import {getIdFromAuthorization, idMatch} from '../shared/Utils';
@@ -511,9 +511,14 @@ export class UserController implements interfaces.Controller, IUserController {
             userRepresentation.firstName = user.firstName;
             userRepresentation.lastName = user.lastName;
             userRepresentation.email = user.email;
-            await this.userIAMService.updateUserRepresentation(userRepresentation);
+            const updated = await this.userIAMService.updateUserRepresentation(userRepresentation);
+            if (updated.response.status === 409) {
+                return response.status(CONFLICT).json({
+                    error: updated.response.data.errorMessage,
+                });
+            }
         } catch (err) {
-            return response.status(BAD_REQUEST).json({
+            return response.status(NOT_FOUND).json({
                 error: err.message,
             });
         }
