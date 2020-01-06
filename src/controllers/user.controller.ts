@@ -399,7 +399,7 @@ export class UserController implements interfaces.Controller, IUserController {
     ): Promise<express.Response> {
         const id: v4String = getIdFromAuthorization(request.headers.authorization as unknown as string);
         try {
-            const user = await this.userService.getUserById(id);
+            const user = await this.userMergeService.getUserById(id);
             return response.status(OK).json({user});
         } catch (err) {
             globalInfoLogger.error(err.message, err);
@@ -451,8 +451,7 @@ export class UserController implements interfaces.Controller, IUserController {
             });
         }
         try {
-            //merge with keycloak
-            const user = await this.userService.getUserById(id as unknown as v4String);
+            const user = await this.userMergeService.getUserById(id as unknown as v4String);
             return response.status(OK).json({user});
         } catch (err) {
             globalInfoLogger.error(err.message, err);

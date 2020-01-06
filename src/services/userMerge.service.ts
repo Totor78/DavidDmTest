@@ -5,9 +5,11 @@ import {IUser, IUserIAM, UserIAM} from '@entities';
 import {NameCallerArgsReturnLogServicesInfoLevel} from '@shared';
 import jwt_decode from 'jwt-decode';
 import {getIdFromAuthorization} from '../shared/Utils';
+import {v4String} from 'uuid/interfaces';
 
 export interface IUserMergeService {
     getAll(): Promise<IUserMerge[]>;
+    getUserById(id: v4String): Promise<IUserMerge>;
     searchUsersByName(name: string): Promise<IUserMerge[]>;
     getFollowsOfUser(authorization: string): Promise<IUserMerge[]>;
     getFollowersOfUser(authorization: string): Promise<IUserMerge[]>;
@@ -23,6 +25,14 @@ export class UserMergeService implements IUserMergeService {
         return UserMergeService.getUsersMergeFromUsersAndUsersIAM(
             await this.userService.getAll(),
             await this.userIAMService.getUsers(),
+        );
+    }
+
+    @NameCallerArgsReturnLogServicesInfoLevel('UserMerge')
+    public async getUserById(id: v4String): Promise<IUserMerge> {
+        return new UserMerge(
+            await this.userService.getUserById(id) as unknown as IUser,
+            await this.userIAMService.getUserById(id),
         );
     }
 
