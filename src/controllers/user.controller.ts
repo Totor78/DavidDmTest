@@ -16,8 +16,6 @@ import {getIdFromAuthorization, idMatch} from '../shared/Utils';
 import {IUserService, UserService} from '../services/user.service';
 import {IUser} from '@entities';
 import {IUserMergeService, UserMergeService} from '../services/userMerge.service';
-import jwt_decode from 'jwt-decode';
-import {find} from 'tslint/lib/utils';
 
 interface IUserController {
     getAll: (
@@ -420,6 +418,46 @@ export class UserController implements interfaces.Controller, IUserController {
         }
         try {
             const user = await this.userService.getUserById(id as unknown as v4String);
+            return response.status(OK).json({user});
+        } catch (err) {
+            globalInfoLogger.error(err.message, err);
+            return response.status(NOT_FOUND).json({
+                error: err.message,
+            });
+        }
+    }
+
+    @httpGet('me')
+    @NameCallerArgsReturnLogControllersInfoLevel('User')
+    @ApiOperationGet({
+        description: 'Get me',
+        summary: 'Get user me',
+        path: '/me',
+        responses: {
+            200: {
+                description: 'Success',
+                type: SwaggerDefinitionConstant.Response.Type.ARRAY,
+                model: 'User',
+            },
+            404: {
+                description: 'User not found',
+            },
+        },
+    })
+    public async getMe(
+        request: express.Request,
+        response: express.Response,
+        next: express.NextFunction,
+    ): Promise<express.Response> {
+        const id: v4String = getIdFromAuthorization(request.headers.authorization as unknown as string);
+
+        if (!idMatch(id as unknown as string)) {
+            return response.status(BAD_REQUEST).json({
+                error: 'id must be uuid',
+            });
+        }
+        try {
+            const user = await this.userService.getUserById(id);
             return response.status(OK).json({user});
         } catch (err) {
             globalInfoLogger.error(err.message, err);
