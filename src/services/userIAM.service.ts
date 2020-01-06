@@ -34,6 +34,11 @@ export class UserIAMService implements IUserIAMService {
                 contains = user.firstName !== undefined && user.firstName.toLowerCase().includes(name.toLowerCase());
                 if (contains) { return true; }
                 contains = user.lastName !== undefined && user.lastName.toLowerCase().includes(name.toLowerCase());
+                if (contains) { return true; }
+                contains =
+                    user.lastName !== undefined
+                    && user.firstName !== undefined
+                    && user.firstName.concat(' ' + user.lastName).toLowerCase().includes(name.toLowerCase());
                 return contains;
             }) as unknown as IUserIAM[];
         } catch (e) {
