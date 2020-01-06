@@ -375,6 +375,40 @@ export class UserController implements interfaces.Controller, IUserController {
         }
     }
 
+    @httpGet('/me')
+    @NameCallerArgsReturnLogControllersInfoLevel('User')
+    @ApiOperationGet({
+        description: 'Get me',
+        summary: 'Get user me',
+        path: '/me',
+        responses: {
+            200: {
+                description: 'Success',
+                type: SwaggerDefinitionConstant.Response.Type.ARRAY,
+                model: 'User',
+            },
+            404: {
+                description: 'User not found',
+            },
+        },
+    })
+    public async getMe(
+        request: express.Request,
+        response: express.Response,
+        next: express.NextFunction,
+    ): Promise<express.Response> {
+        const id: v4String = getIdFromAuthorization(request.headers.authorization as unknown as string);
+        try {
+            const user = await this.userService.getUserById(id);
+            return response.status(OK).json({user});
+        } catch (err) {
+            globalInfoLogger.error(err.message, err);
+            return response.status(NOT_FOUND).json({
+                error: err.message,
+            });
+        }
+    }
+
     @httpGet('/:id')
     @NameCallerArgsReturnLogControllersInfoLevel('User')
     @ApiOperationGet({
@@ -417,41 +451,8 @@ export class UserController implements interfaces.Controller, IUserController {
             });
         }
         try {
+            //merge with keycloak
             const user = await this.userService.getUserById(id as unknown as v4String);
-            return response.status(OK).json({user});
-        } catch (err) {
-            globalInfoLogger.error(err.message, err);
-            return response.status(NOT_FOUND).json({
-                error: err.message,
-            });
-        }
-    }
-
-    @httpGet('/me')
-    @NameCallerArgsReturnLogControllersInfoLevel('User')
-    @ApiOperationGet({
-        description: 'Get me',
-        summary: 'Get user me',
-        path: '/me',
-        responses: {
-            200: {
-                description: 'Success',
-                type: SwaggerDefinitionConstant.Response.Type.ARRAY,
-                model: 'User',
-            },
-            404: {
-                description: 'User not found',
-            },
-        },
-    })
-    public async getMe(
-        request: express.Request,
-        response: express.Response,
-        next: express.NextFunction,
-    ): Promise<express.Response> {
-        const id: v4String = getIdFromAuthorization(request.headers.authorization as unknown as string);
-        try {
-            const user = await this.userService.getUserById(id);
             return response.status(OK).json({user});
         } catch (err) {
             globalInfoLogger.error(err.message, err);
