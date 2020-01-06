@@ -427,7 +427,7 @@ export class UserController implements interfaces.Controller, IUserController {
         }
     }
 
-    @httpGet('me')
+    @httpGet('/me')
     @NameCallerArgsReturnLogControllersInfoLevel('User')
     @ApiOperationGet({
         description: 'Get me',
