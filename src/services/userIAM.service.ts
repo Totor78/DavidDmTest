@@ -2,17 +2,20 @@ import {NameCallerArgsReturnLogServicesInfoLevel} from '@shared';
 import {v4String} from 'uuid/interfaces';
 import {IUserIAM, User, UserIAM} from '@entities';
 import {KeycloakAdminClientService} from './keycloakAdminClient.service';
+import UserRepresentation from 'keycloak-admin/lib/defs/userRepresentation';
 
 export interface IUserIAMService {
-    getUsers: (token: string) => Promise<UserIAM[]>;
-    searchUsersByName: (token: string, name: string) => Promise<UserIAM[]>;
-    getUserById: (token: string, id: v4String) => Promise<UserIAM>;
+    getUsers: () => Promise<UserIAM[]>;
+    searchUsersByName: (name: string) => Promise<UserIAM[]>;
+    getUserById: (id: v4String) => Promise<UserIAM>;
     update: (userIAM: IUserIAM) => Promise<any>;
+    getUserRepresentationById: (id: v4String) => Promise<UserRepresentation>;
+    updateUserRepresentation: (userRepresentation: UserRepresentation) => Promise<any>;
 }
 
 export class UserIAMService implements IUserIAMService {
     @NameCallerArgsReturnLogServicesInfoLevel('UserIAM')
-    public async getUsers(token: string): Promise<UserIAM[]> {
+    public async getUsers(): Promise<UserIAM[]> {
         try {
             return await KeycloakAdminClientService.getInstance().users.find() as unknown as IUserIAM[];
         } catch (e) {
@@ -21,7 +24,7 @@ export class UserIAMService implements IUserIAMService {
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('UserIAM')
-    public async searchUsersByName(token: string, name: string): Promise<UserIAM[]> {
+    public async searchUsersByName(name: string): Promise<UserIAM[]> {
         try {
             const users = await KeycloakAdminClientService.getInstance().users.find();
             return users.filter((user) => {
@@ -39,7 +42,7 @@ export class UserIAMService implements IUserIAMService {
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('UserIAM')
-    public async getUserById(token: string, id: v4String): Promise<UserIAM> {
+    public async getUserById(id: v4String): Promise<UserIAM> {
         try {
             return await KeycloakAdminClientService.getInstance().users.findOne({
                 id: id.toString(),
@@ -55,6 +58,28 @@ export class UserIAMService implements IUserIAMService {
             return await KeycloakAdminClientService.getInstance().users.update({
                 id: userIAM.id.toString(),
             }, UserIAM.getUserRepresentationFromUserIAM(userIAM));
+        } catch (e) {
+            return e;
+        }
+    }
+
+    @NameCallerArgsReturnLogServicesInfoLevel('UserIAM')
+    public async getUserRepresentationById(id: v4String): Promise<UserRepresentation> {
+        try {
+            return await KeycloakAdminClientService.getInstance().users.findOne({
+                id: id as unknown as string,
+            });
+        } catch (e) {
+            return e;
+        }
+    }
+
+    @NameCallerArgsReturnLogServicesInfoLevel('UserIAM')
+    public async updateUserRepresentation(userRepresentation: UserRepresentation): Promise<any> {
+        try {
+            return await KeycloakAdminClientService.getInstance().users.update({
+                id: userRepresentation.id as unknown as string,
+            }, userRepresentation);
         } catch (e) {
             return e;
         }

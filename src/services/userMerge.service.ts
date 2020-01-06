@@ -7,8 +7,8 @@ import jwt_decode from 'jwt-decode';
 import {getIdFromAuthorization} from '../shared/Utils';
 
 export interface IUserMergeService {
-    getAll(authorization: string): Promise<IUserMerge[]>;
-    searchUsersByName(authorization: string, name: string): Promise<IUserMerge[]>;
+    getAll(): Promise<IUserMerge[]>;
+    searchUsersByName(name: string): Promise<IUserMerge[]>;
     getFollowsOfUser(authorization: string): Promise<IUserMerge[]>;
     getFollowersOfUser(authorization: string): Promise<IUserMerge[]>;
 }
@@ -19,41 +19,37 @@ export class UserMergeService implements IUserMergeService {
     private userIAMService: IUserIAMService = new UserIAMService();
 
     @NameCallerArgsReturnLogServicesInfoLevel('UserMerge')
-    public async getAll(authorization: string): Promise<IUserMerge[]> {
-        const token: string = authorization.split(' ')[1];
+    public async getAll(): Promise<IUserMerge[]> {
         return UserMergeService.getUsersMergeFromUsersAndUsersIAM(
             await this.userService.getAll(),
-            await this.userIAMService.getUsers(token),
+            await this.userIAMService.getUsers(),
         );
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('UserMerge')
-    public async searchUsersByName(authorization: string, name: string): Promise<IUserMerge[]> {
-        const token: string = authorization.split(' ')[1];
+    public async searchUsersByName(name: string): Promise<IUserMerge[]> {
         return UserMergeService.getUsersMergeFromUsersAndUsersIAM(
             await this.userService.getAll(),
-            await this.userIAMService.searchUsersByName(token, name),
+            await this.userIAMService.searchUsersByName(name),
         );
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('UserMerge')
     public async getFollowsOfUser(authorization: string): Promise<IUserMerge[]> {
-        const token = authorization.split(' ')[1];
         const id = getIdFromAuthorization(authorization);
         return UserMergeService.getUsersMergeFromUsersAndUsersIAM(
             await this.userService.getFollowsOfUser(id),
-            await this.userIAMService.getUsers(token),
+            await this.userIAMService.getUsers(),
             true,
         );
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('UserMerge')
     public async getFollowersOfUser(authorization: string): Promise<IUserMerge[]> {
-        const token = authorization.split(' ')[1];
         const id = getIdFromAuthorization(authorization);
         return UserMergeService.getUsersMergeFromUsersAndUsersIAM(
             await this.userService.getFollowersOfUser(id),
-            await this.userIAMService.getUsers(token),
+            await this.userIAMService.getUsers(),
             true,
         );
     }
