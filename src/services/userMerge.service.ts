@@ -30,10 +30,15 @@ export class UserMergeService implements IUserMergeService {
 
     @NameCallerArgsReturnLogServicesInfoLevel('UserMerge')
     public async getUserById(id: v4String): Promise<IUserMerge> {
-        return new UserMerge(
-            await this.userService.getUserById(id) as unknown as IUser,
-            await this.userIAMService.getUserById(id),
-        );
+        const user = await this.userService.getUserById(id);
+        if (user !== null) {
+            return new UserMerge(
+                user,
+                await this.userIAMService.getUserById(id),
+            );
+        } else {
+            return await this.userIAMService.getUserById(id) as IUserMerge;
+        }
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('UserMerge')
