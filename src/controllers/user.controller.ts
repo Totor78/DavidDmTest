@@ -25,11 +25,6 @@ interface IUserController {
         response: express.Response,
         next: express.NextFunction,
     ) => Promise<express.Response>;
-    getUserById: (
-        request: express.Request,
-        response: express.Response,
-        next: express.NextFunction,
-    ) => Promise<express.Response>;
     getFollowers: (
         request: express.Request,
         response: express.Response,
@@ -409,49 +404,31 @@ export class UserController implements interfaces.Controller, IUserController {
         }
     }
 
-    @httpGet('/:id')
+    @httpGet('/:username')
     @NameCallerArgsReturnLogControllersInfoLevel('User')
     @ApiOperationGet({
-        description: 'Get user by his id',
-        summary: 'Get user by his id',
-        path: '/{id}',
-        parameters: {
-            path: {
-                id: {
-                    description: 'id of a user',
-                    type: SwaggerDefinitionConstant.Parameter.Type.STRING,
-                    format: 'uuidv4',
-                    required: true,
-                },
-            },
-        },
+        description: 'Get user by username',
+        summary: 'Get user me',
+        path: '/{username}',
         responses: {
             200: {
                 description: 'Success',
                 type: SwaggerDefinitionConstant.Response.Type.ARRAY,
                 model: 'User',
             },
-            400: {
-                description: 'Id must be UUID',
-            },
             404: {
                 description: 'User not found',
             },
         },
     })
-    public async getUserById(
+    public async getByUsername(
         request: express.Request,
         response: express.Response,
         next: express.NextFunction,
     ): Promise<express.Response> {
-        const {id} = request.params;
-        if (!idMatch(id)) {
-            return response.status(BAD_REQUEST).json({
-                error: 'id must be uuid',
-            });
-        }
+        const {username} = request.params;
         try {
-            const user = await this.userMergeService.getUserById(id as unknown as v4String);
+            const user = await this.userMergeService.getUserByUsername(username);
             return response.status(OK).json({user});
         } catch (err) {
             globalInfoLogger.error(err.message, err);
@@ -503,7 +480,6 @@ export class UserController implements interfaces.Controller, IUserController {
             });
         }
     }
-
     @httpPut('')
     @NameCallerArgsReturnLogControllersInfoLevel('User')
     @ApiOperationPut({

@@ -1,7 +1,7 @@
 import IUserMerge, {UserMerge} from '../entities/userMerge.entity';
 import {IUserService, UserService} from './user.service';
 import {IUserIAMService, UserIAMService} from './userIAM.service';
-import {IUser, IUserIAM, UserIAM} from '@entities';
+import {IUser, IUserIAM, User, UserIAM} from '@entities';
 import {NameCallerArgsReturnLogServicesInfoLevel} from '@shared';
 import jwt_decode from 'jwt-decode';
 import {getIdFromAuthorization} from '../shared/Utils';
@@ -11,6 +11,7 @@ export interface IUserMergeService {
     getAll(): Promise<IUserMerge[]>;
     getUserById(id: v4String): Promise<IUserMerge>;
     searchUsersByName(name: string): Promise<IUserMerge[]>;
+    getUserByUsername(username: string): Promise<IUserMerge>;
     getFollowsOfUser(authorization: string): Promise<IUserMerge[]>;
     getFollowersOfUser(authorization: string): Promise<IUserMerge[]>;
 }
@@ -47,6 +48,21 @@ export class UserMergeService implements IUserMergeService {
             await this.userService.getAll(),
             await this.userIAMService.searchUsersByName(name),
         );
+    }
+
+    @NameCallerArgsReturnLogServicesInfoLevel('UserMerge')
+    public async getUserByUsername(username: string): Promise<IUserMerge> {
+        const userIAM: IUserIAM = await this.userIAMService.getUserByUsername(username);
+        console.log(userIAM);
+        const user = await this.userService.getUserById(userIAM.id);
+        if (user !== null) {
+            return new UserMerge(
+                user,
+                userIAM,
+            );
+        } else {
+            return userIAM as IUserMerge;
+        }
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('UserMerge')
