@@ -200,18 +200,18 @@ export class UserController implements interfaces.Controller, IUserController {
         }
     }
 
-    @httpGet('/followers/:id')
+    @httpGet('/followers/:username')
     @NameCallerArgsReturnLogControllersInfoLevel('User')
     @ApiOperationGet({
         description: 'Get followers of user',
         summary: 'Get all followers of a user',
-        path: '/followers/{id}',
+        path: '/followers/{username}',
         parameters: {
             path: {
                 id: {
-                    description: 'id of a user',
+                    description: 'username of a user',
                     type: SwaggerDefinitionConstant.Parameter.Type.STRING,
-                    format: 'uuidv4',
+                    format: 'string',
                     required: true,
                 },
             },
@@ -235,14 +235,10 @@ export class UserController implements interfaces.Controller, IUserController {
         response: express.Response,
         next: express.NextFunction,
     ): Promise<express.Response> {
-        const {id} = request.params;
-        if (!idMatch(id)) {
-            return response.status(BAD_REQUEST).json({
-                error: 'id must be uuid',
-            });
-        }
+        const {username} = request.params;
         try {
-            const followers = await this.userService.getFollowersOfUser(id as unknown as v4String);
+            const userIAM = await this.userIAMService.getUserByUsername(username);
+            const followers = await this.userService.getFollowersOfUser(userIAM.id);
             return response.status(OK).json({followers});
         } catch (err) {
             globalInfoLogger.error(err.message, err);
@@ -285,18 +281,18 @@ export class UserController implements interfaces.Controller, IUserController {
         }
     }
 
-    @httpGet('/follows/:id')
+    @httpGet('/follows/:username')
     @NameCallerArgsReturnLogControllersInfoLevel('User')
     @ApiOperationGet({
         description: 'Get follows of user',
         summary: 'Get all follows of a user',
-        path: '/follows/{id}',
+        path: '/follows/{username}',
         parameters: {
             path: {
                 id: {
-                    description: 'id of a user',
+                    description: 'username of a user',
                     type: SwaggerDefinitionConstant.Parameter.Type.STRING,
-                    format: 'uuidv4',
+                    format: 'string',
                     required: true,
                 },
             },
@@ -320,14 +316,10 @@ export class UserController implements interfaces.Controller, IUserController {
         response: express.Response,
         next: express.NextFunction,
     ): Promise<express.Response> {
-        const {id} = request.params;
-        if (!idMatch(id)) {
-            return response.status(BAD_REQUEST).json({
-                error: 'id must be uuid',
-            });
-        }
+        const {username} = request.params;
         try {
-            const follows = await this.userService.getFollowsOfUser(id as unknown as v4String);
+            const userIAM = await this.userIAMService.getUserByUsername(username);
+            const follows = await this.userService.getFollowsOfUser(userIAM.id);
             return response.status(OK).json({follows});
         } catch (err) {
             globalInfoLogger.error(err.message, err);

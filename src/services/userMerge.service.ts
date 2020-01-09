@@ -63,7 +63,6 @@ export class UserMergeService implements IUserMergeService {
             return userIAM as IUserMerge;
         }
     }
-
     @NameCallerArgsReturnLogServicesInfoLevel('UserMerge')
     public async getFollowsOfUser(authorization: string): Promise<IUserMerge[]> {
         const id = getIdFromAuthorization(authorization);

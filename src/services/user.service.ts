@@ -1,4 +1,4 @@
-import {IUser, IUserIAM, UserIAM} from '@entities';
+import {IUser} from '@entities';
 import {v4String} from 'uuid/interfaces';
 import {UserDao} from '@daos';
 import {NameCallerArgsReturnLogServicesInfoLevel} from '@shared';
@@ -6,7 +6,7 @@ import {IUserDao} from '../daos/User/user.dao';
 
 export interface IUserService {
     getAll: () => Promise<IUser[]>;
-    getUserById: (id: v4String) => Promise<IUser|null>;
+    getUserById: (id: v4String) => Promise<IUser | null>;
     getFollowersOfUser: (id: v4String) => Promise<IUser[]>;
     getFollowsOfUser: (id: v4String) => Promise<IUser[]>;
     add: (user: IUser) => Promise<any>;
@@ -34,7 +34,7 @@ export class UserService implements IUserService {
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('User')
-    public async getUserById(id: v4String): Promise<IUser|null> {
+    public async getUserById(id: v4String): Promise<IUser | null> {
         return await this.userDao.getOne(id);
     }
 
