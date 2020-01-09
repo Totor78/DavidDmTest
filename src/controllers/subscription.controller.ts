@@ -12,9 +12,9 @@ import {ACCEPTED, BAD_REQUEST, CREATED, NO_CONTENT, NOT_FOUND, OK} from 'http-st
 import {globalInfoLogger, NameCallerArgsReturnLogControllersInfoLevel} from '@shared';
 import {KeycloakMiddleware} from '../shared/Keycloak';
 import {idMatch} from '../shared/Utils';
-import {ISubscription} from '@entities';
 import {ISubscriptionService, SubscriptionService} from '../services/subscription.service';
 import jwt_decode from "jwt-decode";
+import {IUserIAMService, UserIAMService} from '../services/userIAM.service';
 
 interface ISubscriptionController {
     getAll: (
@@ -47,21 +47,22 @@ interface ISubscriptionController {
 export class SubscriptionController implements interfaces.Controller, ISubscriptionController {
 
     private subscriptionService: ISubscriptionService = new SubscriptionService();
+    private userIAMService: IUserIAMService = new UserIAMService();
 
     public static TARGET_NAME = 'subscriptionController';
 
-    @httpPost('/:id')
+    @httpPost('/:username')
     @NameCallerArgsReturnLogControllersInfoLevel('Subscription')
     @ApiOperationPost({
         description: 'Add a subscription',
         summary: 'Add a new subscription',
-        path: '/{id}',
+        path: '/{username}',
         parameters: {
             path: {
                 id: {
-                    description: 'id of a user',
+                    description: 'username of a user',
                     type: SwaggerDefinitionConstant.Parameter.Type.STRING,
-                    format: 'uuidv4',
+                    format: 'string',
                     required: true,
                 },
             },
@@ -80,18 +81,14 @@ export class SubscriptionController implements interfaces.Controller, ISubscript
         response: express.Response,
         next: express.NextFunction,
     ): Promise<any> {
-        const { id } = request.params;
-        if (!idMatch(id)) {
-            return response.status(BAD_REQUEST).json({
-                error: 'id must be uuid',
-            });
-        }
+        const { username } = request.params;
         const authorization = request.headers.authorization;
         const token = authorization !== undefined ? jwt_decode(authorization.split(' ')[1]) : '';
         // @ts-ignore
         const followerId = token.sub;
+        const userIAM = await this.userIAMService.getUserByUsername(username);
         try {
-            await this.subscriptionService.add(followerId as unknown as v4String, id as unknown as v4String);
+            await this.subscriptionService.add(followerId as unknown as v4String, userIAM.id as unknown as v4String);
             return response.status(CREATED).json();
         } catch (e) {
             globalInfoLogger.error(e.message, e);
