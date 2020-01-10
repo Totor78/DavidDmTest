@@ -91,7 +91,19 @@ export class UserDao implements IUserDao {
                     userId: user.id.toString(),
                 },
             });
-        } else {
+        } else if (userInBase !== null && user.mediaId === userInBase.mediaId) {
+            await this.userRepository.update(user, {
+                where: {
+                    id: user.id.toString(),
+                },
+            });
+            await this.mediaRepository.destroy({
+                where: {
+                    userId: user.id.toString(),
+                },
+            });
+            return this.mediaRepository.create(user.media);
+        }  else {
             return this.userRepository.update(user, {
                 where: {
                     id: user.id.toString(),
