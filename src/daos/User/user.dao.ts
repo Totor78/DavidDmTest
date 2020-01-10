@@ -79,10 +79,25 @@ export class UserDao implements IUserDao {
      * @param user to update
      */
     public async update(user: IUser): Promise<any> {
-        return this.userRepository.update(user, {
-            where: {
-                id: user.id.toString(),
-            }});
+        const userInBase = await this.getOne(user.id);
+        if (user.mediaId === undefined && userInBase !== null && userInBase.mediaId !== undefined) {
+            await this.userRepository.update(user, {
+                where: {
+                    id: user.id.toString(),
+                },
+            });
+            return this.mediaRepository.destroy({
+                where: {
+                    userId: user.id.toString(),
+                },
+            });
+        } else {
+            return this.userRepository.update(user, {
+                where: {
+                    id: user.id.toString(),
+                },
+            });
+        }
     }
 
     /**
@@ -90,7 +105,15 @@ export class UserDao implements IUserDao {
      * @param id
      */
     public async delete(id: v4String): Promise<any> {
-        return this.userRepository.destroy( {
+        const userInBase = await this.getOne(id);
+        if (userInBase !== null && userInBase.mediaId !== undefined) {
+            await this.mediaRepository.destroy({
+                where: {
+                    userId: id.toString(),
+                },
+            });
+        }
+        return this.userRepository.destroy({
             where: {
                 id: id.toString(),
             },
