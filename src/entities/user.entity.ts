@@ -5,7 +5,7 @@ import {
     PrimaryKey,
     Length,
     Default,
-    HasMany,
+    HasMany, ForeignKey, HasOne,
 } from 'sequelize-typescript';
 import {DataTypes} from 'sequelize';
 import {v4String} from 'uuid/interfaces';
@@ -15,6 +15,7 @@ import {Path} from 'typescript-rest';
 import {IGlobalUser} from './globalUser.entity';
 import UserRepresentation from 'keycloak-admin/lib/defs/userRepresentation';
 import {IUserIAM} from './userIAM.entity';
+import {MediaEntity} from './media.entity';
 
 export enum eTheme {
     BASIC,
@@ -26,6 +27,8 @@ export interface IUser extends IGlobalUser{
     dateOfBirth: Date;
     theme: eTheme;
     pictureId: v4String;
+    mediaId?: v4String;
+    media?: MediaEntity;
     followers: ISubscription[];
     follows: ISubscription[];
 }
@@ -84,6 +87,13 @@ export class User extends Model<User> implements IUser {
     })
     @Column(DataTypes.UUID)
     public pictureId!: v4String;
+
+    @ForeignKey(() => MediaEntity)
+    @Column(DataTypes.UUID)
+    public mediaId?: v4String;
+
+    @HasOne(() => MediaEntity)
+    public media?: MediaEntity;
 
     @HasMany(() => Subscription, 'followerId')
     public followers!: ISubscription[];
