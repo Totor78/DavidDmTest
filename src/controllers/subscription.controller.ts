@@ -1,20 +1,21 @@
 import {
     ApiOperationDelete,
-    ApiOperationGet, ApiOperationPost,
-    ApiOperationPut,
+    ApiOperationGet,
+    ApiOperationPost,
     ApiPath,
     SwaggerDefinitionConstant,
 } from 'swagger-express-ts';
-import {controller, httpDelete, httpGet, httpPost, httpPut, interfaces} from 'inversify-express-utils';
+import {controller, httpDelete, httpGet, httpPost, interfaces} from 'inversify-express-utils';
 import {v4String} from 'uuid/interfaces';
 import * as express from 'express';
-import {ACCEPTED, BAD_REQUEST, CREATED, NO_CONTENT, NOT_FOUND, OK} from 'http-status-codes';
+import {ACCEPTED, BAD_REQUEST, CREATED, NOT_FOUND, OK} from 'http-status-codes';
 import {globalInfoLogger, NameCallerArgsReturnLogControllersInfoLevel} from '@shared';
 import {KeycloakMiddleware} from '../shared/Keycloak';
-import {idMatch} from '../shared/Utils';
-import {ISubscription} from '@entities';
+import {getIdFromAuthorization, idMatch} from '../shared/Utils';
 import {ISubscriptionService, SubscriptionService} from '../services/subscription.service';
-import jwt_decode from "jwt-decode";
+import jwt_decode from 'jwt-decode';
+import {eNotificationType, INotification, NotificationEntity} from '../entities/notification.entity';
+import {INotificationService, NotificationService} from '../services/notification.service';
 
 interface ISubscriptionController {
     getAll: (
@@ -47,6 +48,7 @@ interface ISubscriptionController {
 export class SubscriptionController implements interfaces.Controller, ISubscriptionController {
 
     private subscriptionService: ISubscriptionService = new SubscriptionService();
+    private notificationService: INotificationService = new NotificationService();
 
     public static TARGET_NAME = 'subscriptionController';
 
@@ -86,12 +88,17 @@ export class SubscriptionController implements interfaces.Controller, ISubscript
                 error: 'id must be uuid',
             });
         }
-        const authorization = request.headers.authorization;
-        const token = authorization !== undefined ? jwt_decode(authorization.split(' ')[1]) : '';
-        // @ts-ignore
-        const followerId = token.sub;
+        const authorization: string = request.headers.authorization as unknown as string;
+        const followerId: v4String = getIdFromAuthorization(authorization);
         try {
-            await this.subscriptionService.add(followerId as unknown as v4String, id as unknown as v4String);
+            this.subscriptionService.add(followerId, id as unknown as v4String).then(() => {
+                const notification: INotification = new NotificationEntity(
+                    eNotificationType.FOLLOWS,
+                    followerId,
+                    id as unknown as v4String,
+                );
+                this.notificationService.add(notification, authorization);
+            });
             return response.status(CREATED).json();
         } catch (e) {
             globalInfoLogger.error(e.message, e);
