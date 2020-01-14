@@ -407,6 +407,40 @@ export class UserController implements interfaces.Controller, IUserController {
         }
     }
 
+    @httpGet('/id/:id')
+    @NameCallerArgsReturnLogControllersInfoLevel('User')
+    @ApiOperationGet({
+        description: 'Get user by id',
+        summary: 'Get user by id',
+        path: '/id/{id}',
+        responses: {
+            200: {
+                description: 'Success',
+                type: SwaggerDefinitionConstant.Response.Type.ARRAY,
+                model: 'User',
+            },
+            404: {
+                description: 'User not found',
+            },
+        },
+    })
+    public async getById(
+        request: express.Request,
+        response: express.Response,
+        next: express.NextFunction,
+    ): Promise<any> {
+        const {id} = request.params;
+        try {
+            const user = await this.userMergeService.getUserById(id as unknown as v4String);
+            return response.status(OK).json({user});
+        } catch (err) {
+            globalInfoLogger.error(err.message, err);
+            return response.status(NOT_FOUND).json({
+                error: err.message,
+            });
+        }
+    }
+
     @httpGet('/:username')
     @NameCallerArgsReturnLogControllersInfoLevel('User')
     @ApiOperationGet({

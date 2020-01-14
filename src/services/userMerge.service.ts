@@ -53,6 +53,9 @@ export class UserMergeService implements IUserMergeService {
     @NameCallerArgsReturnLogServicesInfoLevel('UserMerge')
     public async getUserByUsername(username: string): Promise<IUserMerge> {
         const userIAM = await this.userIAMService.getUserByUsername(username);
+        if (userIAM === undefined) {
+            return null as any;
+        }
         const user = await this.userService.getUserById(userIAM.id);
         if (user !== null) {
             return new UserMerge(
