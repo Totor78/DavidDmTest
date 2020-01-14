@@ -27,7 +27,7 @@ export interface IUser extends IGlobalUser{
     dateOfBirth: Date;
     theme: eTheme;
     pictureId: v4String;
-    mediaId?: v4String;
+    mediaId?: string;
     media?: MediaEntity;
     followers: ISubscription[];
     follows: ISubscription[];
@@ -90,7 +90,7 @@ export class User extends Model<User> implements IUser {
 
     @ForeignKey(() => MediaEntity)
     @Column(DataTypes.UUID)
-    public mediaId?: v4String;
+    public mediaId?: string;
 
     @HasOne(() => MediaEntity)
     public media?: MediaEntity;

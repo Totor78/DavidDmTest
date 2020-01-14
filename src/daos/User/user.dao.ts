@@ -68,6 +68,7 @@ export class UserDao implements IUserDao {
         });
     }
     public async add(user: IUser): Promise<any> {
+        user.media !== undefined ? user.mediaId = user.media.id : user.mediaId = undefined;
         return this.userRepository.create(user, {
             include: [
                 this.mediaRepository,

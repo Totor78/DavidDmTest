@@ -17,7 +17,7 @@ export enum eMedia {
     IMAGE,
 }
 export interface IMedia {
-    id?: v4String;
+    id?: string;
     type?: eMedia;
     userId?: v4String;
     user?: User;
@@ -39,7 +39,7 @@ export class MediaEntity extends Model<MediaEntity> implements IMedia {
     })
     @PrimaryKey
     @Column(DataTypes.UUID)
-    public id?: v4String;
+    public id?: string;
 
     @ApiModelProperty({
         description: 'Content of a Post',

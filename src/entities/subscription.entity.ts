@@ -24,7 +24,7 @@ export interface ISubscription {
     name: 'Subscription',
 })
 @Path('Subscription')
-@Table({paranoid: true, tableName: 'subscription'})
+@Table({tableName: 'subscription'})
 export class Subscription extends Model<Subscription> implements ISubscription {
 
     @ApiModelProperty({
