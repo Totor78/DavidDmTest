@@ -15,20 +15,19 @@ import {Path} from 'typescript-rest';
 import {IGlobalUser} from './globalUser.entity';
 import UserRepresentation from 'keycloak-admin/lib/defs/userRepresentation';
 import {IUserIAM} from './userIAM.entity';
-import {MediaEntity} from './media.entity';
+import {IMedia, MediaEntity} from './media.entity';
 
 export enum eTheme {
-    BASIC,
-    DARK,
+    BASIC = 'BASIC',
+    DARK = 'DARK',
 }
 
 export interface IUser extends IGlobalUser{
     description: string;
     dateOfBirth: Date;
     theme: eTheme;
-    pictureId: v4String;
     mediaId?: string;
-    media?: MediaEntity;
+    media?: IMedia;
     followers: ISubscription[];
     follows: ISubscription[];
 }
@@ -73,6 +72,7 @@ export class User extends Model<User> implements IUser {
         required: true,
         example: ['DARK'],
     })
+    @Default('BASIC')
     @Column(
         DataTypes.ENUM({
             values: ['BASIC', 'DARK'],
@@ -89,11 +89,11 @@ export class User extends Model<User> implements IUser {
     public pictureId!: v4String;
 
     @ForeignKey(() => MediaEntity)
-    @Column(DataTypes.UUID)
+    @Column(DataTypes.STRING)
     public mediaId?: string;
 
     @HasOne(() => MediaEntity)
-    public media?: MediaEntity;
+    public media?: IMedia;
 
     @HasMany(() => Subscription, 'followerId')
     public followers!: ISubscription[];

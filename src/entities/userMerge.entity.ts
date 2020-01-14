@@ -6,6 +6,7 @@ import {ApiModel, ApiModelProperty} from 'swagger-express-ts';
 import {Path} from 'typescript-rest';
 import {Column, Default, Length, PrimaryKey} from 'sequelize-typescript';
 import {DataTypes} from 'sequelize';
+import {IMedia} from './media.entity';
 
 export default interface IUserMerge extends IUserIAM, IUser {
 }
@@ -86,12 +87,14 @@ export class UserMerge implements IUserMerge {
     public theme!: eTheme;
 
     @ApiModelProperty({
-        description: 'pictureId',
+        description: 'mediaId',
         required: true,
         example: ['75442486-0878-440c-9db1-a7006c25a39f'],
     })
     @Column(DataTypes.UUID)
-    public pictureId!: v4String;
+    public mediaId?: string;
+
+    public media?: IMedia;
 
     public followers!: ISubscription[];
     public follows!: ISubscription[];
@@ -103,7 +106,8 @@ export class UserMerge implements IUserMerge {
         this.description = user.description;
         this.followers = user.followers;
         this.follows = user.follows;
-        this.pictureId = user.pictureId;
+        this.mediaId = user.mediaId;
+        this.media = user.media;
         this.theme = user.theme;
 
         this.email = userIAM.email;
@@ -120,7 +124,8 @@ export class UserMerge implements IUserMerge {
                 dateOfBirth: new Date(userMerge.dateOfBirth),
                 followers: userMerge.followers,
                 follows: userMerge.follows,
-                pictureId: userMerge.pictureId,
+                mediaId: userMerge.mediaId,
+                media: userMerge.media,
                 theme: userMerge.theme,
             } as IUser,
             new UserIAM(

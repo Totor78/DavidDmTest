@@ -3,6 +3,7 @@ import {v4String} from 'uuid/interfaces';
 import {UserDao} from '@daos';
 import {NameCallerArgsReturnLogServicesInfoLevel} from '@shared';
 import {IUserDao} from '../daos/User/user.dao';
+import {IMedia} from '../entities/media.entity';
 
 export interface IUserService {
     getAll: () => Promise<IUser[]>;
@@ -11,6 +12,7 @@ export interface IUserService {
     getFollowsOfUser: (id: v4String) => Promise<IUser[]>;
     add: (user: IUser) => Promise<any>;
     update: (user: IUser) => Promise<any>;
+    patch: (media: IMedia, userId: v4String) => Promise<any>;
     delete: (id: v4String) => Promise<any>;
 }
 
@@ -46,6 +48,11 @@ export class UserService implements IUserService {
     @NameCallerArgsReturnLogServicesInfoLevel('User')
     public async getFollowsOfUser(id: v4String): Promise<IUser[]> {
         return this.userDao.getFollowsOfUser(id);
+    }
+
+    @NameCallerArgsReturnLogServicesInfoLevel('User')
+    public async patch(media: IMedia, userId: v4String): Promise<any> {
+        return this.userDao.patch(media, userId);
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('User')

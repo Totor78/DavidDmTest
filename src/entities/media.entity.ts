@@ -13,8 +13,8 @@ import {DataTypes} from 'sequelize';
 import {User} from './user.entity';
 
 export enum eMedia {
-    VIDEO,
-    IMAGE,
+    VIDEO = 'VIDEO',
+    IMAGE = 'IMAGE',
 }
 export interface IMedia {
     id?: string;
@@ -38,7 +38,7 @@ export class MediaEntity extends Model<MediaEntity> implements IMedia {
         example: ['75442486-0878-440c-9db1-a7006c25a39f'],
     })
     @PrimaryKey
-    @Column(DataTypes.UUID)
+    @Column(DataTypes.STRING)
     public id?: string;
 
     @ApiModelProperty({

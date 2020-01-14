@@ -1,11 +1,12 @@
 import {
     ApiOperationDelete,
-    ApiOperationGet, ApiOperationPost,
+    ApiOperationGet,
+    ApiOperationPatch,
     ApiOperationPut,
     ApiPath,
     SwaggerDefinitionConstant,
 } from 'swagger-express-ts';
-import {controller, httpDelete, httpGet, httpPost, httpPut, interfaces} from 'inversify-express-utils';
+import {controller, httpDelete, httpGet, httpPatch, httpPut, interfaces} from 'inversify-express-utils';
 import {v4String} from 'uuid/interfaces';
 import {IUserIAMService, UserIAMService} from '../services/userIAM.service';
 import * as express from 'express';
@@ -18,6 +19,8 @@ import {IUser} from '@entities';
 import {IUserMergeService, UserMergeService} from '../services/userMerge.service';
 import UserRepresentation from 'keycloak-admin/lib/defs/userRepresentation';
 import IUserMerge from '../entities/userMerge.entity';
+import {eMedia, IMedia} from '../entities/media.entity';
+import isMimeType from 'validator/lib/isMimeType';
 
 interface IUserController {
     getAll: (
@@ -480,6 +483,7 @@ export class UserController implements interfaces.Controller, IUserController {
             });
         }
     }
+
     @httpPut('')
     @NameCallerArgsReturnLogControllersInfoLevel('User')
     @ApiOperationPut({
@@ -521,10 +525,8 @@ export class UserController implements interfaces.Controller, IUserController {
         user.id = id;
         try {
             const userRepresentation: UserRepresentation = await this.userIAMService.getUserRepresentationById(id);
-            userRepresentation.username = user.username;
             userRepresentation.firstName = user.firstName;
             userRepresentation.lastName = user.lastName;
-            userRepresentation.email = user.email;
             const updated = await this.userIAMService.updateUserRepresentation(userRepresentation);
             if (updated !== undefined && updated.response !== undefined && updated.response.status === 409) {
                 return response.status(CONFLICT).json({
@@ -540,6 +542,8 @@ export class UserController implements interfaces.Controller, IUserController {
             const findedUser: IUser | null = await this.userService.getUserById(id);
             if (findedUser !== null) {
                 try {
+                    user.mediaId = findedUser.mediaId;
+                    user.media = findedUser.media;
                     await this.userService.update(user);
                     return response.status(NO_CONTENT).json();
                 } catch (err) {
@@ -562,6 +566,57 @@ export class UserController implements interfaces.Controller, IUserController {
         } catch (err) {
             globalInfoLogger.error(err.message, err);
             return response.status(NOT_FOUND).json({
+                error: err.message,
+            });
+        }
+    }
+
+    @httpPatch('')
+    @NameCallerArgsReturnLogControllersInfoLevel('User')
+    @ApiOperationPatch({
+        description: 'Patch a user',
+        summary: 'Patch media for user',
+        parameters: {
+            body: {
+                description: 'New media',
+                required: true,
+                model: 'Media',
+            },
+        },
+        responses: {
+            201: {
+                description: 'Created',
+            },
+            204: {
+                description: 'Updated',
+            },
+            400: {
+                description: 'Media malformed',
+            },
+        },
+    })
+    public async patch(
+        request: express.Request,
+        response: express.Response,
+        next: express.NextFunction,
+    ): Promise<express.Response> {
+        request.connection.setTimeout(Number(process.env.TIMEOUT) || 10000);
+        const id: v4String = getIdFromAuthorization(request.headers.authorization as unknown as string);
+        const media: IMedia = request.body;
+        if (media.id !== undefined) {
+            const extension: string = '.' + media.id.split('.')[1];
+            if (extension !== '.' && !extension.match(/.(jpg|jpeg|png|gif)$/i)) {
+                return response.status(BAD_REQUEST).json('Not an image');
+            } else if (extension === '.') {
+                return response.status(BAD_REQUEST).json('No extensions in id');
+            }
+        }
+        media.type = eMedia.IMAGE;
+        try {
+            await this.userService.patch(media, id);
+            return response.status(NO_CONTENT).json();
+        } catch (err) {
+            return response.status(BAD_REQUEST).json({
                 error: err.message,
             });
         }

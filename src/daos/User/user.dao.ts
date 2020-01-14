@@ -1,12 +1,13 @@
 import {v4String} from 'uuid/interfaces';
-import {SequelizeConnection} from '@shared';
+import {NameCallerArgsReturnLogDaosInfoLevel, SequelizeConnection} from '@shared';
 import {IUser, User} from '@entities';
 import {Subscription} from '@entities';
-import {MediaEntity} from '../../entities/media.entity';
+import {IMedia, MediaEntity} from '../../entities/media.entity';
 export interface IUserDao {
     getAll: () => Promise<IUser[]>;
     getOne: (id: v4String) => Promise<IUser|null>;
     add: (user: IUser) => Promise<any>;
+    patch: (media: IMedia, userId: v4String) => Promise<any>;
     update: (user: IUser) => Promise<any>;
     delete: (id: v4String) => Promise<void>;
     getFollowersOfUser: (id: v4String) => Promise<any>;
@@ -75,42 +76,52 @@ export class UserDao implements IUserDao {
             ],
         });
     }
+
+    @NameCallerArgsReturnLogDaosInfoLevel('User')
+    public async patch(media: IMedia, userId: v4String): Promise<any> {
+        const userInBase = await this.getOne(userId);
+        if (userInBase !== null) {
+            if (userInBase.mediaId !== undefined) {
+                return this.mediaRepository.destroy({
+                    where: {
+                        userId: userInBase.id.toString(),
+                    },
+                });
+            }
+            userInBase.media = media;
+            userInBase.mediaId = media.id;
+            await this.userRepository.update(userInBase, {
+                where: {
+                    id: userInBase.id.toString(),
+                },
+            });
+            media.userId = userInBase.id;
+            return this.mediaRepository.create(media);
+        } else {
+            const user: IUser = {id: userId} as IUser;
+            await this.add({id: userId} as IUser);
+            media.userId = userId;
+            await this.mediaRepository.create(media);
+            user.media = media;
+            user.mediaId = media.id;
+            return this.userRepository.update(user, {
+                where: {
+                    id: userId.toString(),
+                },
+            });
+        }
+    }
+
     /**
      *
      * @param user to update
      */
     public async update(user: IUser): Promise<any> {
-        const userInBase = await this.getOne(user.id);
-        if (user.mediaId === undefined && userInBase !== null && userInBase.mediaId !== undefined) {
-            await this.userRepository.update(user, {
-                where: {
-                    id: user.id.toString(),
-                },
-            });
-            return this.mediaRepository.destroy({
-                where: {
-                    userId: user.id.toString(),
-                },
-            });
-        } else if (userInBase !== null && user.mediaId === userInBase.mediaId) {
-            await this.userRepository.update(user, {
-                where: {
-                    id: user.id.toString(),
-                },
-            });
-            await this.mediaRepository.destroy({
-                where: {
-                    userId: user.id.toString(),
-                },
-            });
-            return this.mediaRepository.create(user.media);
-        }  else {
-            return this.userRepository.update(user, {
-                where: {
-                    id: user.id.toString(),
-                },
-            });
-        }
+        await this.userRepository.update(user, {
+            where: {
+                id: user.id.toString(),
+            },
+        });
     }
 
     /**
