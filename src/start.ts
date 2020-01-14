@@ -7,7 +7,6 @@ import {KeycloakAdminClientService} from './services/keycloakAdminClient.service
 (async () => {
     await SequelizeConnection.getInstance().sync();
     await KeycloakAdminClientService.auth();
-    KeycloakAdminClientService.setConfig();
 
     setInterval(async () => {
         const refreshToken: string =
@@ -21,6 +20,7 @@ import {KeycloakAdminClientService} from './services/keycloakAdminClient.service
     }, Number(process.env.KEYCLOAK_REFRESH_TOKEN_TIME) || 58 * 1000);
 
     const port = Number(process.env.PORT || 3001);
+    KeycloakAdminClientService.setConfig();
     app.listen(port, () => {
         globalInfoLogger.info('Express server started on port: ' + port);
     });

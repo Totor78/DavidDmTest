@@ -526,7 +526,7 @@ export class UserController implements interfaces.Controller, IUserController {
             userRepresentation.lastName = user.lastName;
             userRepresentation.email = user.email;
             const updated = await this.userIAMService.updateUserRepresentation(userRepresentation);
-            if (updated.response.status === 409) {
+            if (updated !== undefined && updated.response !== undefined && updated.response.status === 409) {
                 return response.status(CONFLICT).json({
                     error: updated.response.data.errorMessage,
                 });
