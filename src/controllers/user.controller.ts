@@ -561,6 +561,7 @@ export class UserController implements interfaces.Controller, IUserController {
             const userRepresentation: UserRepresentation = await this.userIAMService.getUserRepresentationById(id);
             userRepresentation.firstName = user.firstName;
             userRepresentation.lastName = user.lastName;
+            userRepresentation.username = user.username;
             const updated = await this.userIAMService.updateUserRepresentation(userRepresentation);
             if (updated !== undefined && updated.response !== undefined && updated.response.status === 409) {
                 return response.status(CONFLICT).json({
