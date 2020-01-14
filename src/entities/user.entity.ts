@@ -63,9 +63,9 @@ export class User extends Model<User> implements IUser {
     @ApiModelProperty({
         description: 'date of birth of a user',
         required: true,
-        example: ['This is a User'],
+        example: ['1997-07-17'],
     })
-    @Column(DataTypes.DATE)
+    @Column(DataTypes.DATEONLY)
     public dateOfBirth!: Date;
 
     @ApiModelProperty({
