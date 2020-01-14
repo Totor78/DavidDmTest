@@ -7,6 +7,7 @@ import {KeycloakAdminClientService} from './services/keycloakAdminClient.service
 (async () => {
     await SequelizeConnection.getInstance().sync();
     await KeycloakAdminClientService.auth();
+    KeycloakAdminClientService.setConfig();
 
     setInterval(async () => {
         const refreshToken: string =

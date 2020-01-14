@@ -7,10 +7,16 @@ export class KeycloakAdminClientService {
     public static client: Client;
 
     private static init(): void {
-        KeycloakAdminClientService.kcAdminClient = new KeycloakAdminClient();
-        this.kcAdminClient.setConfig({
+        KeycloakAdminClientService.kcAdminClient = new KeycloakAdminClient({
             baseUrl: process.env.KEYCLOAK_BASE_URL,
             realmName: process.env.KEYCLOAK_REALM_NAME,
+        });
+    }
+
+    public static setConfig(): void {
+        this.kcAdminClient.setConfig({
+            baseUrl: process.env.KEYCLOAK_BASE_URL,
+            realmName: process.env.KEYCLOAK_REALM_ERZO,
         });
     }
 
