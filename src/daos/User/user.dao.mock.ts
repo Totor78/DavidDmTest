@@ -3,6 +3,7 @@ import { IUserDao } from './user.dao';
 import uuid = require('uuid');
 import {v4String} from 'uuid/interfaces';
 import {IUser} from '@entities';
+import {IMedia} from '../../entities/media.entity';
 
 export class UserDao extends MockDaoMock implements IUserDao {
 
@@ -36,6 +37,10 @@ export class UserDao extends MockDaoMock implements IUserDao {
         } catch (err) {
             throw err;
         }
+    }
+
+    public async patch(media: IMedia, userId: v4String): Promise<any> {
+        return null as any;
     }
 
     public async update(user: IUser): Promise<void> {
