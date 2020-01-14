@@ -1,13 +1,14 @@
 import {v4String} from 'uuid/interfaces';
 import {NameCallerArgsReturnLogDaosInfoLevel, SequelizeConnection} from '@shared';
-import {IUser, User} from '@entities';
+import {eTheme, IUser, User} from '@entities';
 import {Subscription} from '@entities';
 import {IMedia, MediaEntity} from '../../entities/media.entity';
 export interface IUserDao {
     getAll: () => Promise<IUser[]>;
     getOne: (id: v4String) => Promise<IUser|null>;
     add: (user: IUser) => Promise<any>;
-    patch: (media: IMedia, userId: v4String) => Promise<any>;
+    patchMedia: (media: IMedia, userId: v4String) => Promise<any>;
+    patchTheme: (theme: eTheme, userId: v4String) => Promise<any>;
     update: (user: IUser) => Promise<any>;
     delete: (id: v4String) => Promise<void>;
     getFollowersOfUser: (id: v4String) => Promise<any>;
@@ -78,25 +79,25 @@ export class UserDao implements IUserDao {
     }
 
     @NameCallerArgsReturnLogDaosInfoLevel('User')
-    public async patch(media: IMedia, userId: v4String): Promise<any> {
+    public async patchMedia(media: IMedia, userId: v4String): Promise<any> {
         const userInBase = await this.getOne(userId);
         if (userInBase !== null) {
             if (userInBase.mediaId !== undefined) {
-                return this.mediaRepository.destroy({
+                await this.mediaRepository.destroy({
                     where: {
                         userId: userInBase.id.toString(),
                     },
                 });
             }
+            media.userId = userInBase.id;
+            await this.mediaRepository.create(media);
             userInBase.media = media;
             userInBase.mediaId = media.id;
-            await this.userRepository.update(userInBase, {
+            return this.userRepository.update(userInBase, {
                 where: {
                     id: userInBase.id.toString(),
                 },
             });
-            media.userId = userInBase.id;
-            return this.mediaRepository.create(media);
         } else {
             const user: IUser = {id: userId} as IUser;
             await this.add({id: userId} as IUser);
@@ -109,6 +110,24 @@ export class UserDao implements IUserDao {
                     id: userId.toString(),
                 },
             });
+        }
+    }
+
+    @NameCallerArgsReturnLogDaosInfoLevel('User')
+    public async patchTheme(theme: eTheme, userId: v4String): Promise<any> {
+        const userInBase: IUser | null = await this.getOne(userId);
+        if (userInBase !== null) {
+            console.log(userInBase);
+            return this.update({
+                id: userInBase.id,
+                description: userInBase.description,
+                dateOfBirth: userInBase.dateOfBirth,
+                theme,
+                followers: userInBase.followers,
+                follows: userInBase.follows,
+            });
+        } else {
+            return this.add({id: userId, theme} as IUser);
         }
     }
 

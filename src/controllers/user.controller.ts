@@ -15,7 +15,7 @@ import {globalInfoLogger, NameCallerArgsReturnLogControllersInfoLevel} from '@sh
 import {KeycloakMiddleware} from '../shared/Keycloak';
 import {getIdFromAuthorization, idMatch} from '../shared/Utils';
 import {IUserService, UserService} from '../services/user.service';
-import {IUser} from '@entities';
+import {eTheme, IUser} from '@entities';
 import {IUserMergeService, UserMergeService} from '../services/userMerge.service';
 import UserRepresentation from 'keycloak-admin/lib/defs/userRepresentation';
 import IUserMerge from '../entities/userMerge.entity';
@@ -59,6 +59,16 @@ interface IUserController {
         next: express.NextFunction,
     ) => Promise<express.Response>;
     update: (
+        request: express.Request,
+        response: express.Response,
+        next: express.NextFunction,
+    ) => Promise<any>;
+    patchMedia: (
+        request: express.Request,
+        response: express.Response,
+        next: express.NextFunction,
+    ) => Promise<any>;
+    patchTheme: (
         request: express.Request,
         response: express.Response,
         next: express.NextFunction,
@@ -606,7 +616,7 @@ export class UserController implements interfaces.Controller, IUserController {
         }
     }
 
-    @httpPatch('')
+    @httpPatch('/media')
     @NameCallerArgsReturnLogControllersInfoLevel('User')
     @ApiOperationPatch({
         description: 'Patch a user',
@@ -630,7 +640,7 @@ export class UserController implements interfaces.Controller, IUserController {
             },
         },
     })
-    public async patch(
+    public async patchMedia(
         request: express.Request,
         response: express.Response,
         next: express.NextFunction,
@@ -648,7 +658,51 @@ export class UserController implements interfaces.Controller, IUserController {
         }
         media.type = eMedia.IMAGE;
         try {
-            await this.userService.patch(media, id);
+            await this.userService.patchMedia(media, id);
+            return response.status(NO_CONTENT).json();
+        } catch (err) {
+            return response.status(BAD_REQUEST).json({
+                error: err.message,
+            });
+        }
+    }
+
+    @httpPatch('/theme')
+    @NameCallerArgsReturnLogControllersInfoLevel('User')
+    @ApiOperationPatch({
+        description: 'Patch a user',
+        summary: 'Patch theme for user',
+        parameters: {
+            body: {
+                description: 'theme',
+                required: true,
+                model: 'string',
+            },
+        },
+        responses: {
+            201: {
+                description: 'Created',
+            },
+            204: {
+                description: 'Updated',
+            },
+            400: {
+                description: 'Media malformed',
+            },
+        },
+    })
+    public async patchTheme(
+        request: express.Request,
+        response: express.Response,
+        next: express.NextFunction,
+    ): Promise<express.Response> {
+        request.connection.setTimeout(Number(process.env.TIMEOUT) || 10000);
+        const id: v4String = getIdFromAuthorization(request.headers.authorization as unknown as string);
+        console.log(request.body.theme);
+        const theme: eTheme = request.body.theme;
+        console.log(theme);
+        try {
+            await this.userService.patchTheme(theme, id);
             return response.status(NO_CONTENT).json();
         } catch (err) {
             return response.status(BAD_REQUEST).json({

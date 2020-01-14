@@ -5,7 +5,7 @@ import {KeycloakAdminClientService} from './services/keycloakAdminClient.service
 
 // Start the server
 (async () => {
-    await SequelizeConnection.getInstance().sync({force: true});
+    await SequelizeConnection.getInstance().sync();
     await KeycloakAdminClientService.auth();
 
     setInterval(async () => {

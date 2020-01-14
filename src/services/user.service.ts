@@ -1,4 +1,4 @@
-import {IUser, IUserIAM, UserIAM} from '@entities';
+import {eTheme, IUser, IUserIAM, UserIAM} from '@entities';
 import {v4String} from 'uuid/interfaces';
 import {UserDao} from '@daos';
 import {NameCallerArgsReturnLogServicesInfoLevel} from '@shared';
@@ -12,7 +12,8 @@ export interface IUserService {
     getFollowsOfUser: (id: v4String) => Promise<IUser[]>;
     add: (user: IUser) => Promise<any>;
     update: (user: IUser) => Promise<any>;
-    patch: (media: IMedia, userId: v4String) => Promise<any>;
+    patchMedia: (media: IMedia, userId: v4String) => Promise<any>;
+    patchTheme: (theme: eTheme, userId: v4String) => Promise<any>;
     delete: (id: v4String) => Promise<any>;
 }
 
@@ -51,8 +52,13 @@ export class UserService implements IUserService {
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('User')
-    public async patch(media: IMedia, userId: v4String): Promise<any> {
-        return this.userDao.patch(media, userId);
+    public async patchMedia(media: IMedia, userId: v4String): Promise<any> {
+        return this.userDao.patchMedia(media, userId);
+    }
+
+    @NameCallerArgsReturnLogServicesInfoLevel('User')
+    public async patchTheme(theme: eTheme, userId: v4String): Promise<any> {
+        return this.userDao.patchTheme(theme, userId);
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('User')

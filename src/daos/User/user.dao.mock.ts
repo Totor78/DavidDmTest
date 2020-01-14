@@ -2,7 +2,7 @@ import { MockDaoMock } from '../MockDb/MockDao.mock';
 import { IUserDao } from './user.dao';
 import uuid = require('uuid');
 import {v4String} from 'uuid/interfaces';
-import {IUser} from '@entities';
+import {eTheme, IUser} from '@entities';
 import {IMedia} from '../../entities/media.entity';
 
 export class UserDao extends MockDaoMock implements IUserDao {
@@ -39,7 +39,11 @@ export class UserDao extends MockDaoMock implements IUserDao {
         }
     }
 
-    public async patch(media: IMedia, userId: v4String): Promise<any> {
+    public async patchMedia(media: IMedia, userId: v4String): Promise<any> {
+        return null as any;
+    }
+
+    public async patchTheme(theme: eTheme, userId: v4String): Promise<any> {
         return null as any;
     }
 
