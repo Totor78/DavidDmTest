@@ -117,7 +117,6 @@ export class UserDao implements IUserDao {
     public async patchTheme(theme: eTheme, userId: v4String): Promise<any> {
         const userInBase: IUser | null = await this.getOne(userId);
         if (userInBase !== null) {
-            console.log(userInBase);
             return this.update({
                 id: userInBase.id,
                 description: userInBase.description,
