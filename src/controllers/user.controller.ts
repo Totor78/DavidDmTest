@@ -6,7 +6,7 @@ import {
     ApiPath,
     SwaggerDefinitionConstant,
 } from 'swagger-express-ts';
-import {controller, httpDelete, httpGet, httpPatch, httpPut, interfaces} from 'inversify-express-utils';
+import {controller, httpDelete, httpGet, httpPatch, httpPut, interfaces, queryParam} from 'inversify-express-utils';
 import {v4String} from 'uuid/interfaces';
 import {IUserIAMService, UserIAMService} from '../services/userIAM.service';
 import * as express from 'express';
@@ -20,10 +20,11 @@ import {IUserMergeService, UserMergeService} from '../services/userMerge.service
 import UserRepresentation from 'keycloak-admin/lib/defs/userRepresentation';
 import IUserMerge from '../entities/userMerge.entity';
 import {eMedia, IMedia} from '../entities/media.entity';
-import isMimeType from 'validator/lib/isMimeType';
 
 interface IUserController {
     getAll: (
+        username: string,
+        id: v4String,
         request: express.Request,
         response: express.Response,
         next: express.NextFunction,
@@ -151,8 +152,8 @@ export class UserController implements interfaces.Controller, IUserController {
     @httpGet('')
     @NameCallerArgsReturnLogControllersInfoLevel('User')
     @ApiOperationGet({
-        description: 'Get all users',
-        summary: 'Get list of all users',
+        description: 'Get users',
+        summary: 'Get users with query param id or username or without',
         responses: {
             200: {
                 description: 'Success',
@@ -165,18 +166,42 @@ export class UserController implements interfaces.Controller, IUserController {
         },
     })
     public async getAll(
+        @queryParam('username') username: string,
+        @queryParam('id') id: v4String,
         request: express.Request,
         response: express.Response,
         next: express.NextFunction,
     ): Promise<express.Response> {
-        try {
-            const users = await this.userMergeService.getAll();
-            return response.status(OK).json({users});
-        } catch (err) {
-            globalInfoLogger.error(err.message, err);
-            return response.status(BAD_REQUEST).json({
-                error: err.message,
-            });
+        if (username !== undefined) {
+            try {
+                const user = await this.userMergeService.getUserByUsername(username);
+                return response.status(OK).json({user});
+            } catch (err) {
+                globalInfoLogger.error(err.message, err);
+                return response.status(NOT_FOUND).json({
+                    error: err.message,
+                });
+            }
+        } else if (id !== undefined) {
+            try {
+                const user = await this.userMergeService.getUserById(id);
+                return response.status(OK).json({user});
+            } catch (err) {
+                globalInfoLogger.error(err.message, err);
+                return response.status(NOT_FOUND).json({
+                    error: err.message,
+                });
+            }
+        } else {
+            try {
+                const users = await this.userMergeService.getAll();
+                return response.status(OK).json({users});
+            } catch (err) {
+                globalInfoLogger.error(err.message, err);
+                return response.status(BAD_REQUEST).json({
+                    error: err.message,
+                });
+            }
         }
     }
 
@@ -417,74 +442,6 @@ export class UserController implements interfaces.Controller, IUserController {
         }
     }
 
-    @httpGet('/id/:id')
-    @NameCallerArgsReturnLogControllersInfoLevel('User')
-    @ApiOperationGet({
-        description: 'Get user by id',
-        summary: 'Get user by id',
-        path: '/id/{id}',
-        responses: {
-            200: {
-                description: 'Success',
-                type: SwaggerDefinitionConstant.Response.Type.ARRAY,
-                model: 'User',
-            },
-            404: {
-                description: 'User not found',
-            },
-        },
-    })
-    public async getById(
-        request: express.Request,
-        response: express.Response,
-        next: express.NextFunction,
-    ): Promise<any> {
-        const {id} = request.params;
-        try {
-            const user = await this.userMergeService.getUserById(id as unknown as v4String);
-            return response.status(OK).json({user});
-        } catch (err) {
-            globalInfoLogger.error(err.message, err);
-            return response.status(NOT_FOUND).json({
-                error: err.message,
-            });
-        }
-    }
-
-    @httpGet('/:username')
-    @NameCallerArgsReturnLogControllersInfoLevel('User')
-    @ApiOperationGet({
-        description: 'Get user by username',
-        summary: 'Get user me',
-        path: '/{username}',
-        responses: {
-            200: {
-                description: 'Success',
-                type: SwaggerDefinitionConstant.Response.Type.ARRAY,
-                model: 'User',
-            },
-            404: {
-                description: 'User not found',
-            },
-        },
-    })
-    public async getByUsername(
-        request: express.Request,
-        response: express.Response,
-        next: express.NextFunction,
-    ): Promise<express.Response> {
-        const {username} = request.params;
-        try {
-            const user = await this.userMergeService.getUserByUsername(username);
-            return response.status(OK).json({user});
-        } catch (err) {
-            globalInfoLogger.error(err.message, err);
-            return response.status(NOT_FOUND).json({
-                error: err.message,
-            });
-        }
-    }
-
     @httpGet('/keycloak/:name')
     @NameCallerArgsReturnLogControllersInfoLevel('User')
     @ApiOperationGet({
@@ -698,9 +655,7 @@ export class UserController implements interfaces.Controller, IUserController {
     ): Promise<express.Response> {
         request.connection.setTimeout(Number(process.env.TIMEOUT) || 10000);
         const id: v4String = getIdFromAuthorization(request.headers.authorization as unknown as string);
-        console.log(request.body.theme);
         const theme: eTheme = request.body.theme;
-        console.log(theme);
         try {
             await this.userService.patchTheme(theme, id);
             return response.status(NO_CONTENT).json();
