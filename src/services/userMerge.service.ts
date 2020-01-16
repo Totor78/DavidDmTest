@@ -38,7 +38,19 @@ export class UserMergeService implements IUserMergeService {
                 await this.userIAMService.getUserById(id),
             );
         } else {
-            return await this.userIAMService.getUserById(id) as IUserMerge;
+            const userIAM = await this.userIAMService.getUserById(id);
+            return new UserMerge({
+                    id: userIAM.id,
+                    mediaId: null,
+                    media: null,
+                    theme: null,
+                    dateOfBirth: null,
+                    description: null,
+                    follows: null,
+                    followers: null,
+                } as unknown as IUser,
+                userIAM,
+            );
         }
     }
 
@@ -63,7 +75,18 @@ export class UserMergeService implements IUserMergeService {
                 userIAM,
             );
         } else {
-            return userIAM as IUserMerge;
+            return new UserMerge({
+                    id: userIAM.id,
+                    mediaId: null,
+                    media: null,
+                    theme: null,
+                    dateOfBirth: null,
+                    description: null,
+                    follows: null,
+                    followers: null,
+                } as unknown as IUser,
+                userIAM,
+            );
         }
     }
 
@@ -103,7 +126,16 @@ export class UserMergeService implements IUserMergeService {
                     }
                 }
                 if (!isIn && !strict) {
-                    usersMerge.push(new UserMerge({id: usersIAMElement.id} as IUser, usersIAMElement));
+                    usersMerge.push(new UserMerge({
+                        id: usersIAMElement.id,
+                        mediaId: null,
+                        media: null,
+                        theme: null,
+                        dateOfBirth: null,
+                        description: null,
+                        follows: null,
+                        followers: null,
+                    } as unknown as IUser as IUser, usersIAMElement));
                 }
             }
         }
