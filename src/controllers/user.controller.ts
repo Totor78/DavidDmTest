@@ -280,7 +280,7 @@ export class UserController implements interfaces.Controller, IUserController {
             });
         }
         try {
-            const followers = await this.userService.getFollowersOfUser(id as unknown as v4String);
+            const followers = await this.userMergeService.getFollowersOfUser(id as unknown as v4String);
             return response.status(OK).json({followers});
         } catch (err) {
             globalInfoLogger.error(err.message, err);
@@ -312,8 +312,9 @@ export class UserController implements interfaces.Controller, IUserController {
         response: express.Response,
         next: express.NextFunction,
     ): Promise<express.Response> {
+        const id = getIdFromAuthorization(request.headers.authorization as string);
         try {
-            const followers = await this.userMergeService.getFollowersOfUser(request.headers.authorization as string);
+            const followers = await this.userMergeService.getFollowersOfUser(id);
             return response.status(OK).json({followers});
         } catch (err) {
             globalInfoLogger.error(err.message, err);
@@ -365,7 +366,7 @@ export class UserController implements interfaces.Controller, IUserController {
             });
         }
         try {
-            const follows = await this.userService.getFollowsOfUser(id as unknown as v4String);
+            const follows = await this.userMergeService.getFollowsOfUser(id as unknown as v4String);
             return response.status(OK).json({follows});
         } catch (err) {
             globalInfoLogger.error(err.message, err);
@@ -397,8 +398,9 @@ export class UserController implements interfaces.Controller, IUserController {
         response: express.Response,
         next: express.NextFunction,
     ): Promise<express.Response> {
+        const id = getIdFromAuthorization(request.headers.authorization as string);
         try {
-            const follows = await this.userMergeService.getFollowsOfUser(request.headers.authorization as string);
+            const follows = await this.userMergeService.getFollowsOfUser(id);
             return response.status(OK).json({follows});
         } catch (err) {
             globalInfoLogger.error(err.message, err);

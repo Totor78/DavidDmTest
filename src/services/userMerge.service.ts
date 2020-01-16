@@ -12,8 +12,8 @@ export interface IUserMergeService {
     getUserById(id: v4String): Promise<IUserMerge>;
     searchUsersByName(name: string): Promise<IUserMerge[]>;
     getUserByUsername(username: string): Promise<IUserMerge>;
-    getFollowsOfUser(authorization: string): Promise<IUserMerge[]>;
-    getFollowersOfUser(authorization: string): Promise<IUserMerge[]>;
+    getFollowsOfUser(id: v4String): Promise<IUserMerge[]>;
+    getFollowersOfUser(id: v4String): Promise<IUserMerge[]>;
 }
 
 export class UserMergeService implements IUserMergeService {
@@ -68,8 +68,7 @@ export class UserMergeService implements IUserMergeService {
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('UserMerge')
-    public async getFollowsOfUser(authorization: string): Promise<IUserMerge[]> {
-        const id = getIdFromAuthorization(authorization);
+    public async getFollowsOfUser(id: v4String): Promise<IUserMerge[]> {
         return UserMergeService.getUsersMergeFromUsersAndUsersIAM(
             await this.userService.getFollowsOfUser(id),
             await this.userIAMService.getUsers(),
@@ -78,8 +77,7 @@ export class UserMergeService implements IUserMergeService {
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('UserMerge')
-    public async getFollowersOfUser(authorization: string): Promise<IUserMerge[]> {
-        const id = getIdFromAuthorization(authorization);
+    public async getFollowersOfUser(id: v4String): Promise<IUserMerge[]> {
         return UserMergeService.getUsersMergeFromUsersAndUsersIAM(
             await this.userService.getFollowersOfUser(id),
             await this.userIAMService.getUsers(),
