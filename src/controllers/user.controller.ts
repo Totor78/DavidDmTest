@@ -578,6 +578,7 @@ export class UserController implements interfaces.Controller, IUserController {
     @ApiOperationPatch({
         description: 'Patch a user',
         summary: 'Patch media for user',
+        path: '/media',
         parameters: {
             body: {
                 description: 'New media',
@@ -629,6 +630,7 @@ export class UserController implements interfaces.Controller, IUserController {
     @ApiOperationPatch({
         description: 'Patch a user',
         summary: 'Patch theme for user',
+        path: '/theme',
         parameters: {
             body: {
                 description: 'theme',
