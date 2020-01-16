@@ -47,7 +47,7 @@ export class UserMergeService implements IUserMergeService {
         return UserMergeService.getUsersMergeFromUsersAndUsersIAM(
             await this.userService.getAll(),
             await this.userIAMService.searchUsersByName(name),
-        );
+        ).slice(0, 5);
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('UserMerge')
