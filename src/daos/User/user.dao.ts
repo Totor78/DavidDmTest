@@ -93,7 +93,15 @@ export class UserDao implements IUserDao {
             await this.mediaRepository.create(media);
             userInBase.media = media;
             userInBase.mediaId = media.id;
-            return this.userRepository.update(userInBase, {
+            return this.userRepository.update({
+                id: userInBase.id,
+                description: userInBase.description,
+                dateOfBirth: userInBase.dateOfBirth,
+                theme: userInBase.theme,
+                followers: userInBase.followers,
+                follows: userInBase.follows,
+                mediaId: userInBase.mediaId,
+            }, {
                 where: {
                     id: userInBase.id.toString(),
                 },
