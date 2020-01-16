@@ -80,14 +80,6 @@ export class User extends Model<User> implements IUser {
     )
     public theme!: eTheme;
 
-    @ApiModelProperty({
-        description: 'pictureId',
-        required: true,
-        example: ['75442486-0878-440c-9db1-a7006c25a39f'],
-    })
-    @Column(DataTypes.UUID)
-    public pictureId!: v4String;
-
     @ForeignKey(() => MediaEntity)
     @Column(DataTypes.STRING)
     public mediaId?: string;
