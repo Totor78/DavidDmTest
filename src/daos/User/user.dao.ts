@@ -20,13 +20,16 @@ export class UserDao implements IUserDao {
     private subscriptionRepository = SequelizeConnection.getInstance().getRepository(Subscription);
     private mediaRepository = SequelizeConnection.getInstance().getRepository(MediaEntity);
 
+    @NameCallerArgsReturnLogDaosInfoLevel('User')
     public async getAll(): Promise<IUser[]> {
         return this.userRepository.findAll();
     }
+
     /**
      * @param id of the user to return
      * @param userIAM
      */
+    @NameCallerArgsReturnLogDaosInfoLevel('User')
     public async getOne(id: v4String): Promise<IUser|null> {
         return this.userRepository.findOne({
             where: {
@@ -37,9 +40,11 @@ export class UserDao implements IUserDao {
             ],
         });
     }
+
     /**
      * @param id
      */
+    @NameCallerArgsReturnLogDaosInfoLevel('User')
     public async getFollowersOfUser(id: v4String): Promise<any> {
          return this.userRepository.findAll({
             include: [{
@@ -53,9 +58,11 @@ export class UserDao implements IUserDao {
             ],
         });
     }
+
     /**
      * @param id
      */
+    @NameCallerArgsReturnLogDaosInfoLevel('User')
     public async getFollowsOfUser(id: v4String): Promise<any> {
         return this.userRepository.findAll({
             include: [{
@@ -69,6 +76,8 @@ export class UserDao implements IUserDao {
             ],
         });
     }
+
+    @NameCallerArgsReturnLogDaosInfoLevel('User')
     public async add(user: IUser): Promise<any> {
         user.media !== undefined ? user.mediaId = user.media.id : user.mediaId = undefined;
         return this.userRepository.create(user, {

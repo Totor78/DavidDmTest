@@ -522,7 +522,6 @@ export class UserController implements interfaces.Controller, IUserController {
         response: express.Response,
         next: express.NextFunction,
     ): Promise<express.Response> {
-        request.connection.setTimeout(Number(process.env.TIMEOUT) || 10000);
         const user: IUserMerge = request.body as unknown as IUserMerge;
         const id: v4String = getIdFromAuthorization(request.headers.authorization as unknown as string);
         user.id = id;
@@ -605,7 +604,6 @@ export class UserController implements interfaces.Controller, IUserController {
         response: express.Response,
         next: express.NextFunction,
     ): Promise<express.Response> {
-        request.connection.setTimeout(Number(process.env.TIMEOUT) || 10000);
         const id: v4String = getIdFromAuthorization(request.headers.authorization as unknown as string);
         const media: IMedia = request.body;
         if (media.id !== undefined) {
@@ -657,7 +655,6 @@ export class UserController implements interfaces.Controller, IUserController {
         response: express.Response,
         next: express.NextFunction,
     ): Promise<express.Response> {
-        request.connection.setTimeout(Number(process.env.TIMEOUT) || 10000);
         const id: v4String = getIdFromAuthorization(request.headers.authorization as unknown as string);
         const theme: eTheme = request.body.theme;
         try {
