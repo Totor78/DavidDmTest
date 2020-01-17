@@ -60,13 +60,13 @@ export class UserIAMService implements IUserIAMService {
 
     @NameCallerArgsReturnLogServicesInfoLevel('UserIAM')
     public async getUserByUsername(username: string): Promise<UserIAM> {
-        return new Promise((resolve, reject) => {
-            KeycloakAdminClientService.getInstance().users.find({
+        try {
+            return await KeycloakAdminClientService.getInstance().users.find({
                 username,
-            }).then((users) => {
-                resolve(users[0] as unknown as IUserIAM);
-            }).catch((err) => reject(err));
-        });
+            }) as unknown as IUserIAM;
+        } catch (e) {
+            return e;
+        }
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('UserIAM')
