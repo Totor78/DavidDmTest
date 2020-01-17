@@ -28,8 +28,6 @@ export class UserIAMService implements IUserIAMService {
     public async searchUsersByName(name: string): Promise<UserIAM[]> {
         try {
             const users = await KeycloakAdminClientService.getInstance().users.find();
-            console.log('usersIam list');
-            console.log(users);
             return users.filter((user) => {
                 let contains;
                 contains = user.username !== undefined && user.username.toLowerCase().includes(name.toLowerCase());

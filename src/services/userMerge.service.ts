@@ -114,9 +114,6 @@ export class UserMergeService implements IUserMergeService {
         strict: boolean = false,
     ): IUserMerge[] {
         const usersMerge: IUserMerge[] = [];
-        console.log('getUsersMergeFromUsersAndUsersIAM');
-        console.log('userIam');
-        console.log(usersIAM);
         if (usersIAM !== null && usersIAM.length > 0) {
             for (const usersIAMElement of usersIAM) {
                 let isIn: boolean = false;
