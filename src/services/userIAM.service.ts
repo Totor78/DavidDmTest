@@ -65,7 +65,8 @@ export class UserIAMService implements IUserIAMService {
                 username,
             });
             if (users.length > 0) {
-                return users[0] as unknown as IUserIAM;
+                const user = users[0];
+                return user as unknown as IUserIAM;
             }
             return undefined;
         } catch (e) {
