@@ -154,7 +154,7 @@ export class SubscriptionController implements interfaces.Controller, ISubscript
         const followerId = token.sub;
         try {
             await this.subscriptionService.delete(followerId as unknown as v4String, id as unknown as v4String);
-            return response.status(ACCEPTED);
+            return response.status(ACCEPTED).json();
         } catch (err) {
             globalInfoLogger.error(err.message, err);
             return response.status(NOT_FOUND).json({
