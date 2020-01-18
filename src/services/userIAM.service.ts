@@ -8,7 +8,7 @@ export interface IUserIAMService {
     getUsers: () => Promise<UserIAM[]>;
     searchUsersByName: (name: string) => Promise<UserIAM[]>;
     getUserById: (id: v4String) => Promise<UserIAM>;
-    getUserByUsername: (username: string) => Promise<UserIAM>;
+    getUserByUsername: (username: string) => Promise<any>;
     update: (userIAM: IUserIAM) => Promise<any>;
     getUserRepresentationById: (id: v4String) => Promise<UserRepresentation>;
     updateUserRepresentation: (userRepresentation: UserRepresentation) => Promise<any>;
@@ -59,11 +59,15 @@ export class UserIAMService implements IUserIAMService {
     }
 
     @NameCallerArgsReturnLogServicesInfoLevel('UserIAM')
-    public async getUserByUsername(username: string): Promise<UserIAM> {
+    public async getUserByUsername(username: string): Promise<any> {
         try {
-            return await KeycloakAdminClientService.getInstance().users.find({
+            const users = await KeycloakAdminClientService.getInstance().users.find({
                 username,
-            }) as unknown as IUserIAM;
+            });
+            if (users.length > 0) {
+                return users[0] as unknown as IUserIAM;
+            }
+            return undefined;
         } catch (e) {
             return e;
         }
